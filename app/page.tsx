@@ -87,16 +87,18 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex overflow-hidden">
+      <main className="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row md:overflow-hidden">
 
         {/* Left — Avatar */}
-        <div className="w-1/2 flex flex-col items-center justify-center border-r border-gray-800 p-8 gap-6">
-          <AvatarViewer
-            language={language}
-            selectedService={selectedService}
-            onFormDataReceived={handleFormData}
-          />
-          <div className="w-80 bg-gray-800 rounded-xl p-4 text-center">
+        <div className="flex w-full shrink-0 flex-col items-center gap-3 border-b border-gray-800 p-4 md:w-1/2 md:min-h-0 md:shrink md:gap-4 md:border-b-0 md:border-r md:p-6">
+          <div className="flex w-full items-center justify-center px-2 md:min-h-0 md:h-full md:flex-1">
+            <AvatarViewer
+              language={language}
+              selectedService={selectedService}
+              onFormDataReceived={handleFormData}
+            />
+          </div>
+          <div className="w-full max-w-sm shrink-0 bg-gray-800 rounded-xl p-4 text-center">
             <p className="text-gray-300 text-sm">
               {selectedService
                 ? 'Speak to Rathna to fill your form'
@@ -106,7 +108,7 @@ export default function Home() {
         </div>
 
         {/* Right — Form */}
-        <div className="w-1/2 flex flex-col p-8 overflow-y-auto">
+        <div className="flex w-full flex-1 flex-col p-4 md:w-1/2 md:min-h-0 md:p-8 md:overflow-y-auto">
           {!selectedService ? (
             <div className="flex-1 flex flex-col items-center justify-center">
               <div className="w-full max-w-md space-y-4">
