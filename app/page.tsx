@@ -58,10 +58,10 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col overflow-x-hidden bg-gray-950 text-white">
+    <div className="flex min-h-dvh w-full flex-col overflow-x-hidden bg-gray-950 text-white">
 
       {/* Header */}
-      <header className="flex w-full flex-col items-center gap-3 border-b border-gray-800 px-4 py-4 sm:flex-row sm:justify-between sm:px-6 md:px-8">
+      <header className="safe-padding-x flex w-full shrink-0 flex-col items-center gap-3 border-b border-gray-800 px-4 py-4 sm:flex-row sm:justify-between sm:px-6 md:px-8">
         <div className="flex items-center gap-3">
           <span className="text-2xl">🇱🇰</span>
           <div>
@@ -73,6 +73,8 @@ export default function Home() {
           {(['en', 'si', 'ta'] as const).map((lang) => (
             <button
               key={lang}
+              type="button"
+              aria-pressed={language === lang}
               onClick={() => setLanguage(lang)}
               className={`rounded-full px-3 py-1.5 text-sm font-medium transition-all sm:px-4 sm:py-2 ${
                 language === lang
@@ -87,7 +89,7 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="flex min-h-0 w-full flex-1 flex-col items-center overflow-x-hidden overflow-y-auto max-md:px-4 md:flex-row md:items-stretch md:overflow-hidden md:px-0">
+      <main className="safe-padding-bottom flex min-h-0 w-full flex-1 flex-col items-center overflow-x-hidden overflow-y-auto max-md:px-4 md:flex-row md:items-stretch md:overflow-hidden md:px-0">
 
         {/* Left — Avatar */}
         <div className="mx-auto flex w-full max-w-lg shrink-0 flex-col items-center gap-3 border-b border-gray-800 p-4 md:mx-0 md:max-w-none md:w-1/2 md:min-h-0 md:shrink md:gap-4 md:border-b-0 md:border-r md:p-6">
@@ -118,7 +120,7 @@ export default function Home() {
         </div>
 
         {/* Right — Form */}
-        <div className="mx-auto flex w-full max-w-lg flex-1 flex-col p-4 max-md:px-0 max-md:pb-6 md:mx-0 md:max-w-none md:w-1/2 md:min-h-0 md:p-8 md:overflow-y-auto">
+        <div className="mx-auto flex w-full max-w-lg min-w-0 flex-1 flex-col p-4 max-md:px-0 max-md:pb-6 md:mx-0 md:max-w-none md:w-1/2 md:min-h-0 md:p-8 md:overflow-y-auto">
           {!selectedService ? (
             <div className="flex-1 flex flex-col items-center justify-center">
               <div className="w-full max-w-md space-y-4">
@@ -132,10 +134,11 @@ export default function Home() {
                 ].map((service) => (
                   <button
                     key={service.id}
+                    type="button"
                     onClick={() => setSelectedService(service.id)}
-                    className="w-full p-5 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-yellow-400 rounded-xl text-left transition-all group"
+                    className="group w-full rounded-xl border border-gray-700 bg-gray-800 p-5 text-left transition-all hover:border-yellow-400 hover:bg-gray-700"
                   >
-                    <span className="text-lg group-hover:text-yellow-400 transition-colors">
+                    <span className="text-base leading-snug break-words transition-colors group-hover:text-yellow-400 sm:text-lg">
                       {service.label}
                     </span>
                   </button>
@@ -143,8 +146,8 @@ export default function Home() {
               </div>
             </div>
           ) : (
-            <div className="w-full h-full flex flex-col">
-              <div className="mb-4 flex min-w-0 items-start gap-2">
+            <div className="flex w-full min-w-0 flex-col">
+              <div className="mb-4 flex min-w-0 items-start gap-2 max-md:sticky max-md:top-0 max-md:z-20 max-md:bg-gray-950 max-md:py-2">
                 <button
                   type="button"
                   onClick={() => {

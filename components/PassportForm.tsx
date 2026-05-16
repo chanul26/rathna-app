@@ -34,7 +34,7 @@ const fields = [
 
 export default function PassportForm({ formData }: Props) {
   return (
-    <div className="w-full h-full overflow-y-auto">
+    <div className="w-full min-w-0 pb-2 md:overflow-visible">
       {/* Form Header */}
       <div className="mb-4 rounded-xl border border-blue-700/50 bg-blue-900/40 p-4 text-center">
         <p className="text-xs font-medium break-words text-blue-300">
@@ -59,7 +59,7 @@ export default function PassportForm({ formData }: Props) {
                   : 'border-gray-700 bg-gray-800/50'
               }`}
             >
-              <label className="text-xs text-gray-400 block mb-1">
+              <label className="mb-1 block text-xs break-words text-gray-400">
                 {field.label}
               </label>
 
@@ -69,7 +69,7 @@ export default function PassportForm({ formData }: Props) {
                     <motion.p
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="text-white font-medium text-sm"
+                      className="break-words text-sm font-medium text-white"
                     >
                       {value}
                     </motion.p>
