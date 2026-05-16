@@ -18,32 +18,32 @@ interface Props {
 const fields = [
   {
     key: 'businessName',
-    label: 'Business Name',
+    label: 'Business Name / ව්‍යාපාර නාමය',
     placeholder: 'e.g. Rathna Stores'
   },
   {
     key: 'ownerName',
-    label: 'Owner Name',
+    label: 'Owner Name / අයිතිකරුගේ නම',
     placeholder: 'e.g. Kasun Perera'
   },
   {
     key: 'nationalId',
-    label: 'NIC Number',
+    label: 'NIC Number / ජාතික හැඳුනුම්පත',
     placeholder: 'e.g. 200012345678'
   },
   {
     key: 'businessAddress',
-    label: 'Business Address',
+    label: 'Business Address / ව්‍යාපාර ලිපිනය',
     placeholder: 'e.g. Colombo'
   },
   {
     key: 'businessType',
-    label: 'Business Type',
+    label: 'Business Type / ව්‍යාපාර වර්ගය',
     placeholder: 'e.g. Retail Shop'
   },
   {
     key: 'district',
-    label: 'District',
+    label: 'District / දිස්ත්‍රික්කය',
     placeholder: 'e.g. Colombo'
   }
 ]
