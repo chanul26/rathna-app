@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import PassportForm, { PassportFormData } from '@/components/PassportForm'
 import AvatarViewer from '@/components/AvatarViewer'
+import { useSpeech } from '@/hooks/useSpeech'
 
 const emptyPassportForm: PassportFormData = {
   surname: '',
@@ -51,11 +52,46 @@ export default function Home() {
 
   const t = labels[language]
 
-  function handleFormData(data: Record<string, string>) {
-    if (selectedService === 'passport') {
-      setPassportData(prev => ({ ...prev, ...data }))
+  const processTranscript = useCallback(async (transcript: string) => {
+    if (!selectedService) return
+
+    try {
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          transcript,
+          service: selectedService,
+        }),
+      })
+
+      const extractedData = await response.json()
+
+      const cleanedData = Object.fromEntries(
+        Object.entries(extractedData).filter(([_, v]) => v !== ''),
+      )
+
+      if (selectedService === 'passport') {
+        setPassportData((prev) => ({ ...prev, ...cleanedData }))
+      }
+    } catch (error) {
+      console.error('Failed to process transcript:', error)
     }
-  }
+  }, [selectedService])
+
+  const { isListening, startListening, stopListening } = useSpeech(
+    language,
+    processTranscript,
+  )
+
+  useEffect(() => {
+    if (selectedService) {
+      startListening()
+    } else {
+      stopListening()
+    }
+    return () => stopListening()
+  }, [selectedService, startListening, stopListening])
 
   return (
     <div className="flex min-h-dvh w-full flex-col overflow-x-hidden bg-gray-950 text-white">
@@ -103,7 +139,7 @@ export default function Home() {
             <AvatarViewer
               language={language}
               selectedService={selectedService}
-              onFormDataReceived={handleFormData}
+              onFormDataReceived={() => {}}
             />
           </div>
           <div
