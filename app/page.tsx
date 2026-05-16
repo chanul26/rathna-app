@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import PassportForm, { PassportFormData } from '@/components/PassportForm'
+import GNForm, { GNFormData } from '@/components/GNForm'
+import BusinessForm, { BusinessFormData } from '@/components/BusinessForm'
 import AvatarViewer from '@/components/AvatarViewer'
 import { useSpeech } from '@/hooks/useSpeech'
 
@@ -18,10 +20,31 @@ const emptyPassportForm: PassportFormData = {
   serviceType: '',
 }
 
+const emptyGnForm: GNFormData = {
+  fullName: '',
+  nationalId: '',
+  address: '',
+  reason: '',
+  district: '',
+}
+
+const emptyBusinessForm: BusinessFormData = {
+  businessName: '',
+  ownerName: '',
+  nationalId: '',
+  businessAddress: '',
+  businessType: '',
+  district: '',
+}
+
 export default function Home() {
   const [language, setLanguage] = useState<'en' | 'si' | 'ta'>('en')
   const [selectedService, setSelectedService] = useState<string | null>(null)
-  const [passportData, setPassportData] = useState<PassportFormData>(emptyPassportForm)
+  const [passportData, setPassportData] =
+    useState<PassportFormData>(emptyPassportForm)
+  const [gnData, setGnData] = useState<GNFormData>(emptyGnForm)
+  const [businessData, setBusinessData] =
+    useState<BusinessFormData>(emptyBusinessForm)
 
   const labels = {
     en: {
@@ -52,34 +75,47 @@ export default function Home() {
 
   const t = labels[language]
 
-  const processTranscript = useCallback(async (transcript: string) => {
-    if (!selectedService) return
-
-    try {
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          transcript,
-          service: selectedService,
-        }),
-      })
-
-      const extractedData = await response.json()
-
+  const applyFormData = useCallback(
+    (data: Record<string, string>) => {
       const cleanedData = Object.fromEntries(
-        Object.entries(extractedData).filter(([_, v]) => v !== ''),
+        Object.entries(data).filter(([, v]) => v !== ''),
       )
 
       if (selectedService === 'passport') {
         setPassportData((prev) => ({ ...prev, ...cleanedData }))
+      } else if (selectedService === 'gn') {
+        setGnData((prev) => ({ ...prev, ...cleanedData }))
+      } else if (selectedService === 'business') {
+        setBusinessData((prev) => ({ ...prev, ...cleanedData }))
       }
-    } catch (error) {
-      console.error('Failed to process transcript:', error)
-    }
-  }, [selectedService])
+    },
+    [selectedService],
+  )
 
-  const { isListening, startListening, stopListening } = useSpeech(
+  const processTranscript = useCallback(
+    async (transcript: string) => {
+      if (!selectedService) return
+
+      try {
+        const response = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            transcript,
+            service: selectedService,
+          }),
+        })
+
+        const extractedData = await response.json()
+        applyFormData(extractedData)
+      } catch (error) {
+        console.error('Failed to process transcript:', error)
+      }
+    },
+    [selectedService, applyFormData],
+  )
+
+  const { startListening, stopListening } = useSpeech(
     language,
     processTranscript,
   )
@@ -93,10 +129,16 @@ export default function Home() {
     return () => stopListening()
   }, [selectedService, startListening, stopListening])
 
+  function handleBack() {
+    setSelectedService(null)
+    setPassportData(emptyPassportForm)
+    setGnData(emptyGnForm)
+    setBusinessData(emptyBusinessForm)
+  }
+
   return (
     <div className="flex min-h-dvh w-full flex-col overflow-x-hidden bg-gray-950 text-white">
 
-      {/* Header */}
       <header className="safe-padding-x flex w-full shrink-0 flex-col items-center gap-3 border-b border-gray-800 px-4 py-4 sm:flex-row sm:justify-between sm:px-6 md:px-8">
         <div className="flex items-center gap-3">
           <span className="text-2xl">🇱🇰</span>
@@ -124,10 +166,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="safe-padding-bottom flex min-h-0 w-full flex-1 flex-col items-center overflow-x-hidden overflow-y-auto max-md:px-4 md:flex-row md:items-stretch md:overflow-hidden md:px-0">
-
-        {/* Left — Avatar */}
         <div className="mx-auto flex w-full max-w-lg shrink-0 flex-col items-center gap-3 border-b border-gray-800 p-4 md:mx-0 md:max-w-none md:w-1/2 md:min-h-0 md:shrink md:gap-4 md:border-b-0 md:border-r md:p-6">
           <div
             className={`flex w-full max-w-sm items-center justify-center overscroll-contain px-2 md:min-h-0 md:h-full md:max-w-none md:flex-1 ${
@@ -139,7 +178,7 @@ export default function Home() {
             <AvatarViewer
               language={language}
               selectedService={selectedService}
-              onFormDataReceived={() => {}}
+              onFormDataReceived={applyFormData}
             />
           </div>
           <div
@@ -155,7 +194,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Right — Form */}
         <div className="mx-auto flex w-full max-w-lg min-w-0 flex-1 flex-col p-4 max-md:px-0 max-md:pb-6 md:mx-0 md:max-w-none md:w-1/2 md:min-h-0 md:p-8 md:overflow-y-auto">
           {!selectedService ? (
             <div className="flex-1 flex flex-col items-center justify-center">
@@ -186,38 +224,30 @@ export default function Home() {
               <div className="mb-4 flex min-w-0 items-start gap-2 max-md:sticky max-md:top-0 max-md:z-20 max-md:bg-gray-950 max-md:py-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    setSelectedService(null)
-                    setPassportData(emptyPassportForm)
-                  }}
+                  onClick={handleBack}
                   className="shrink-0 pt-0.5 text-sm text-gray-400 hover:text-white"
                 >
                   ← Back
                 </button>
                 <h2 className="min-w-0 flex-1 text-base font-semibold leading-snug text-yellow-400 sm:text-lg">
-                  {selectedService === 'passport' ? t.passport
-                    : selectedService === 'gn' ? t.gn
-                    : t.business}
+                  {selectedService === 'passport'
+                    ? t.passport
+                    : selectedService === 'gn'
+                      ? t.gn
+                      : t.business}
                 </h2>
               </div>
 
               {selectedService === 'passport' && (
                 <PassportForm formData={passportData} />
               )}
-              {selectedService === 'gn' && (
-                <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                  <p className="text-gray-400 text-center">GN Form coming next</p>
-                </div>
-              )}
+              {selectedService === 'gn' && <GNForm formData={gnData} />}
               {selectedService === 'business' && (
-                <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                  <p className="text-gray-400 text-center">Business Form coming next</p>
-                </div>
+                <BusinessForm formData={businessData} />
               )}
             </div>
           )}
         </div>
-
       </main>
     </div>
   )
