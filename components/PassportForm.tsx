@@ -1,6 +1,7 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
+import { generatePassportPDF } from '@/lib/generatePDF'
 
 export interface PassportFormData {
   surname: string
@@ -33,25 +34,33 @@ const fields = [
 ]
 
 export default function PassportForm({ formData }: Props) {
+  const filledCount = fields.filter(
+    (f) => formData[f.key as keyof PassportFormData]?.length > 0,
+  ).length
+  const isComplete = filledCount === fields.length
+  const percent = Math.round((filledCount / fields.length) * 100)
+
   return (
     <div className="w-full min-w-0 pb-2 md:overflow-visible">
-      {/* Form Header */}
       <div className="mb-4 rounded-xl border border-blue-700/50 bg-blue-900/40 p-4 text-center">
         <p className="text-xs font-medium break-words text-blue-300">
           SRI LANKA DEPARTMENT OF IMMIGRATION & EMIGRATION
         </p>
-        <h3 className="text-white font-bold text-lg mt-1">Passport Application Form</h3>
-        <p className="text-xs text-gray-400 mt-1">Speak to Rathna to fill this form automatically</p>
+        <h3 className="mt-1 text-lg font-bold text-white">
+          Passport Application Form
+        </h3>
+        <p className="mt-1 text-xs text-gray-400">
+          Speak to Rathna to fill this form automatically
+        </p>
       </div>
 
-      {/* Form Fields */}
       <div className="space-y-3">
         {fields.map((field) => {
           const value = formData[field.key as keyof PassportFormData]
           const isFilled = value && value.length > 0
 
           return (
-            <div
+            <motion.div
               key={field.key}
               className={`rounded-lg border p-3 transition-all duration-500 ${
                 isFilled
@@ -63,7 +72,7 @@ export default function PassportForm({ formData }: Props) {
                 {field.label}
               </label>
 
-              <div className="min-h-[28px] flex items-center">
+              <div className="flex min-h-[28px] items-center">
                 {isFilled ? (
                   <AnimatePresence>
                     <motion.p
@@ -75,39 +84,46 @@ export default function PassportForm({ formData }: Props) {
                     </motion.p>
                   </AnimatePresence>
                 ) : (
-                  <p className="text-gray-600 text-sm italic">
+                  <p className="text-sm italic text-gray-600">
                     {field.placeholder}
                   </p>
                 )}
               </div>
-            </div>
+            </motion.div>
           )
         })}
       </div>
 
-      {/* Completion indicator */}
-      {(() => {
-        const filledCount = fields.filter(
-          f => formData[f.key as keyof PassportFormData]
-        ).length
-        const percent = Math.round((filledCount / fields.length) * 100)
-        return (
-          <div className="mt-4 p-3 bg-gray-800 rounded-lg">
-            <div className="flex justify-between text-xs text-gray-400 mb-2">
-              <span>Form completion</span>
-              <span>{filledCount}/{fields.length} fields</span>
-            </div>
-            <div className="w-full bg-gray-700 rounded-full h-2">
-              <motion.div
-                className="bg-yellow-400 h-2 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${percent}%` }}
-                transition={{ duration: 0.5 }}
-              />
-            </div>
+      <div className="mt-4 space-y-3">
+        <div className="rounded-lg bg-gray-800 p-3">
+          <div className="mb-2 flex justify-between text-xs text-gray-400">
+            <span>Form completion</span>
+            <span>
+              {filledCount}/{fields.length} fields
+            </span>
           </div>
-        )
-      })()}
+          <div className="h-2 w-full rounded-full bg-gray-700">
+            <motion.div
+              className="h-2 rounded-full bg-yellow-400"
+              initial={{ width: 0 }}
+              animate={{ width: `${percent}%` }}
+              transition={{ duration: 0.5 }}
+            />
+          </div>
+        </div>
+
+        {isComplete && (
+          <motion.button
+            type="button"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            onClick={() => generatePassportPDF(formData)}
+            className="w-full rounded-xl border border-yellow-400/60 bg-yellow-400 px-4 py-3 text-sm font-semibold text-gray-950 transition-colors hover:bg-yellow-300"
+          >
+            Download PDF
+          </motion.button>
+        )}
+      </div>
     </div>
   )
 }

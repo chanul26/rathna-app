@@ -1,5 +1,7 @@
 // lib/formSchemas.ts
 
+export type FormService = 'passport' | 'gn' | 'business'
+
 export const passportSchema = {
     name: "passport_extraction",
     description: "Extracts personal information for a Sri Lankan passport application",
@@ -22,3 +24,69 @@ export const passportSchema = {
       additionalProperties: false
     }
   }
+
+export const gnSchema = {
+  name: 'gn_extraction',
+  description: 'Extracts information for a Grama Niladhari certificate request',
+  strict: true,
+  schema: {
+    type: 'object',
+    properties: {
+      fullName: {
+        type: 'string',
+        description: 'Full legal name of the applicant.',
+      },
+      nationalId: {
+        type: 'string',
+        description: 'Sri Lankan NIC number.',
+      },
+      address: { type: 'string', description: 'Residential address.' },
+      reason: {
+        type: 'string',
+        description: 'Reason for requesting the certificate.',
+      },
+      district: { type: 'string', description: 'District in Sri Lanka.' },
+    },
+    required: ['fullName', 'nationalId', 'address', 'reason', 'district'],
+    additionalProperties: false,
+  },
+}
+
+export const businessSchema = {
+  name: 'business_extraction',
+  description: 'Extracts information for a business registration application',
+  strict: true,
+  schema: {
+    type: 'object',
+    properties: {
+      businessName: { type: 'string', description: 'Registered business name.' },
+      ownerName: { type: 'string', description: 'Owner full name.' },
+      nationalId: { type: 'string', description: 'Owner NIC number.' },
+      businessAddress: { type: 'string', description: 'Business address.' },
+      businessType: {
+        type: 'string',
+        description: 'Type of business, e.g. retail, restaurant.',
+      },
+      district: { type: 'string', description: 'District in Sri Lanka.' },
+    },
+    required: [
+      'businessName',
+      'ownerName',
+      'nationalId',
+      'businessAddress',
+      'businessType',
+      'district',
+    ],
+    additionalProperties: false,
+  },
+}
+
+const schemaByService = {
+  passport: passportSchema,
+  gn: gnSchema,
+  business: businessSchema,
+} as const
+
+export function getSchemaForService(service: FormService) {
+  return schemaByService[service]
+}

@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import PassportForm, { PassportFormData } from '@/components/PassportForm'
 import GNForm, { GNFormData } from '@/components/GNForm'
 import BusinessForm, { BusinessFormData } from '@/components/BusinessForm'
 import AvatarViewer from '@/components/AvatarViewer'
-import { useSpeech } from '@/hooks/useSpeech'
 
 const emptyPassportForm: PassportFormData = {
   surname: '',
@@ -37,6 +36,24 @@ const emptyBusinessForm: BusinessFormData = {
   district: '',
 }
 
+function pickNonEmptyFields(
+  data: Record<string, string>,
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(data).filter(
+      ([, v]) => typeof v === 'string' && v.trim() !== '',
+    ),
+  )
+}
+
+function resetAllFormData() {
+  return {
+    passport: emptyPassportForm,
+    gn: emptyGnForm,
+    business: emptyBusinessForm,
+  }
+}
+
 export default function Home() {
   const [language, setLanguage] = useState<'en' | 'si' | 'ta'>('en')
   const [selectedService, setSelectedService] = useState<string | null>(null)
@@ -45,6 +62,15 @@ export default function Home() {
   const [gnData, setGnData] = useState<GNFormData>(emptyGnForm)
   const [businessData, setBusinessData] =
     useState<BusinessFormData>(emptyBusinessForm)
+  const [conversationEpoch, setConversationEpoch] = useState(0)
+  const conversationEpochRef = useRef(0)
+  const analyzeAbortRef = useRef<AbortController | null>(null)
+  const activeCallIdRef = useRef<string | null>(null)
+  const completedCallIdsRef = useRef<string[]>([])
+  const lastMessageCountRef = useRef(0)
+  const sessionStartedAtRef = useRef(new Date().toISOString())
+  const syncInFlightRef = useRef(false)
+  const syncRequestIdRef = useRef(0)
 
   const labels = {
     en: {
@@ -75,65 +101,137 @@ export default function Home() {
 
   const t = labels[language]
 
+  const clearForms = useCallback(() => {
+    const empty = resetAllFormData()
+    setPassportData(empty.passport)
+    setGnData(empty.gn)
+    setBusinessData(empty.business)
+  }, [])
+
+  const finishApplication = useCallback(() => {
+    analyzeAbortRef.current?.abort()
+    analyzeAbortRef.current = null
+    if (activeCallIdRef.current) {
+      completedCallIdsRef.current = [
+        ...completedCallIdsRef.current,
+        activeCallIdRef.current,
+      ]
+    }
+    activeCallIdRef.current = null
+    lastMessageCountRef.current = 0
+    sessionStartedAtRef.current = new Date().toISOString()
+    clearForms()
+    conversationEpochRef.current += 1
+    setConversationEpoch(conversationEpochRef.current)
+  }, [clearForms])
+
+  const beginNewConversation = useCallback(() => {
+    analyzeAbortRef.current?.abort()
+    analyzeAbortRef.current = null
+    completedCallIdsRef.current = []
+    activeCallIdRef.current = null
+    lastMessageCountRef.current = 0
+    sessionStartedAtRef.current = new Date().toISOString()
+    conversationEpochRef.current += 1
+    setConversationEpoch(conversationEpochRef.current)
+    clearForms()
+  }, [clearForms])
+
   const applyFormData = useCallback(
     (data: Record<string, string>) => {
-      const cleanedData = Object.fromEntries(
-        Object.entries(data).filter(([, v]) => v !== ''),
-      )
+      if (Object.keys(data).length === 0) return
+
+      const patch = pickNonEmptyFields(data)
 
       if (selectedService === 'passport') {
-        setPassportData((prev) => ({ ...prev, ...cleanedData }))
+        setPassportData((prev) => ({ ...prev, ...patch }))
       } else if (selectedService === 'gn') {
-        setGnData((prev) => ({ ...prev, ...cleanedData }))
+        setGnData((prev) => ({ ...prev, ...patch }))
       } else if (selectedService === 'business') {
-        setBusinessData((prev) => ({ ...prev, ...cleanedData }))
+        setBusinessData((prev) => ({ ...prev, ...patch }))
       }
     },
     [selectedService],
   )
 
-  const processTranscript = useCallback(
-    async (transcript: string) => {
-      if (!selectedService) return
+  useEffect(() => {
+    if (!selectedService) return
+
+    const epochAtStart = conversationEpochRef.current
+
+    const syncFromAvatar = async () => {
+      if (
+        epochAtStart !== conversationEpochRef.current ||
+        syncInFlightRef.current
+      ) {
+        return
+      }
+
+      syncInFlightRef.current = true
+      const requestId = ++syncRequestIdRef.current
+
+      const params = new URLSearchParams({
+        service: selectedService,
+        lastMessageCount: String(lastMessageCountRef.current),
+        completed: completedCallIdsRef.current.join(','),
+        sessionStartedAt: sessionStartedAtRef.current,
+      })
+      if (activeCallIdRef.current) {
+        params.set('activeCallId', activeCallIdRef.current)
+      }
 
       try {
-        const response = await fetch('/api/analyze', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            transcript,
-            service: selectedService,
-          }),
+        const res = await fetch(`/api/form-sync?${params}`, {
+          cache: 'no-store',
         })
+        if (
+          !res.ok ||
+          epochAtStart !== conversationEpochRef.current ||
+          requestId !== syncRequestIdRef.current
+        ) {
+          return
+        }
 
-        const extractedData = await response.json()
-        applyFormData(extractedData)
-      } catch (error) {
-        console.error('Failed to process transcript:', error)
+        const data = await res.json()
+        if (data.error || requestId !== syncRequestIdRef.current) return
+
+        if (data.activeCallId) {
+          activeCallIdRef.current = data.activeCallId
+        }
+        if (typeof data.messageCount === 'number') {
+          lastMessageCountRef.current = data.messageCount
+        }
+        if (data.formData && typeof data.formData === 'object') {
+          applyFormData(data.formData as Record<string, string>)
+        }
+      } catch {
+        // ignore transient polling errors
+      } finally {
+        syncInFlightRef.current = false
       }
-    },
-    [selectedService, applyFormData],
-  )
-
-  const { startListening, stopListening } = useSpeech(
-    language,
-    processTranscript,
-  )
-
-  useEffect(() => {
-    if (selectedService) {
-      startListening()
-    } else {
-      stopListening()
     }
-    return () => stopListening()
-  }, [selectedService, startListening, stopListening])
+
+    syncFromAvatar()
+    const interval = setInterval(syncFromAvatar, 2500)
+    return () => clearInterval(interval)
+  }, [selectedService, conversationEpoch, applyFormData])
 
   function handleBack() {
+    beginNewConversation()
     setSelectedService(null)
-    setPassportData(emptyPassportForm)
-    setGnData(emptyGnForm)
-    setBusinessData(emptyBusinessForm)
+  }
+
+  function handleSelectService(serviceId: string) {
+    beginNewConversation()
+    setSelectedService(serviceId)
+  }
+
+  function handleNewApplication() {
+    beginNewConversation()
+  }
+
+  function handleDone() {
+    finishApplication()
   }
 
   return (
@@ -178,6 +276,7 @@ export default function Home() {
             <AvatarViewer
               language={language}
               selectedService={selectedService}
+              conversationKey={conversationEpoch}
               onFormDataReceived={applyFormData}
             />
           </div>
@@ -188,7 +287,7 @@ export default function Home() {
           >
             <p className="text-gray-300 text-sm">
               {selectedService
-                ? 'Speak to Rathna to fill your form'
+                ? 'Speak to Rathna — your data is cleared when you finish or start a new applicant'
                 : t.selectService}
             </p>
           </div>
@@ -209,7 +308,7 @@ export default function Home() {
                   <button
                     key={service.id}
                     type="button"
-                    onClick={() => setSelectedService(service.id)}
+                    onClick={() => handleSelectService(service.id)}
                     className="group w-full rounded-xl border border-gray-700 bg-gray-800 p-5 text-left transition-all hover:border-yellow-400 hover:bg-gray-700"
                   >
                     <span className="text-base leading-snug break-words transition-colors group-hover:text-yellow-400 sm:text-lg">
@@ -228,6 +327,20 @@ export default function Home() {
                   className="shrink-0 pt-0.5 text-sm text-gray-400 hover:text-white"
                 >
                   ← Back
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDone}
+                  className="shrink-0 pt-0.5 text-sm text-emerald-400 hover:text-emerald-300"
+                >
+                  Done
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNewApplication}
+                  className="shrink-0 pt-0.5 text-sm text-gray-400 hover:text-white"
+                >
+                  New applicant
                 </button>
                 <h2 className="min-w-0 flex-1 text-base font-semibold leading-snug text-yellow-400 sm:text-lg">
                   {selectedService === 'passport'

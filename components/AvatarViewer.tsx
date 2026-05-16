@@ -1,14 +1,13 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 
 interface Props {
   language: 'en' | 'si' | 'ta'
   selectedService: string | null
+  conversationKey: number
   onFormDataReceived: (data: Record<string, string>) => void
 }
-
-const AGENT_URL = 'https://bey.chat/f25dd3c0-9cf2-461a-b44a-f7941994b8d4'
 
 const languageTitles: Record<Props['language'], string> = {
   en: 'Talk to Rathna',
@@ -16,7 +15,6 @@ const languageTitles: Record<Props['language'], string> = {
   ta: 'ரத்னாவுடன் பேசுங்கள்',
 }
 
-/** Portrait 9:16 on mobile; landscape 5:4 on desktop (matches Bey card) */
 const frameClassName = [
   'relative isolate overflow-hidden rounded-2xl border-2 [transform:translateZ(0)]',
   'mx-auto w-full max-w-[min(100%,20rem)] aspect-[9/16] max-h-[min(72vh,600px)]',
@@ -46,12 +44,30 @@ function AvatarFrame({
 export default function AvatarViewer({
   language,
   selectedService,
+  conversationKey,
   onFormDataReceived,
 }: Props) {
-  // Reserved for Bey postMessage / webhook integration
   void onFormDataReceived
 
+  const [embedUrl, setEmbedUrl] = useState<string | null>(null)
   const regionLabel = languageTitles[language]
+
+  useEffect(() => {
+    let cancelled = false
+
+    fetch('/api/avatar-session', { cache: 'no-store' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { embedUrl?: string } | null) => {
+        if (!cancelled && data?.embedUrl) {
+          setEmbedUrl(data.embedUrl)
+        }
+      })
+      .catch(() => {})
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   if (!selectedService) {
     return (
@@ -69,18 +85,26 @@ export default function AvatarViewer({
     )
   }
 
+  if (!embedUrl) {
+    return (
+      <AvatarFrame
+        label={regionLabel}
+        className="flex items-center justify-center border-yellow-400/30 bg-gray-800"
+      >
+        <p className="text-sm text-gray-400">Loading Rathna…</p>
+      </AvatarFrame>
+    )
+  }
+
   return (
     <AvatarFrame label={regionLabel} className="border-yellow-400/50 bg-black">
-      <div className="absolute inset-0 overflow-hidden bg-black [transform:translateZ(0)]">
+      <div className="absolute inset-0 overflow-hidden bg-black">
         <iframe
-          src={AGENT_URL}
+          key={`${conversationKey}-${embedUrl}`}
+          src={embedUrl}
           title={regionLabel}
-          className="absolute inset-0 h-full w-full touch-manipulation border-0 [transform:translateZ(0)]"
+          className="h-full w-full touch-manipulation border-0"
           allow="camera; microphone; fullscreen"
-        />
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-10 bg-gradient-to-t from-gray-950 from-55% to-transparent md:hidden"
-          aria-hidden
         />
       </div>
     </AvatarFrame>
