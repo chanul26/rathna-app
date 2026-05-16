@@ -91,7 +91,7 @@ export default function Home() {
 
         {/* Left — Avatar */}
         <div className="flex w-full shrink-0 flex-col items-center gap-3 border-b border-gray-800 p-4 md:w-1/2 md:min-h-0 md:shrink md:gap-4 md:border-b-0 md:border-r md:p-6">
-          <div className="flex w-full items-center justify-center px-2 md:min-h-0 md:h-full md:flex-1">
+          <div className="flex w-full items-center justify-center overscroll-contain px-2 max-md:min-h-[min(72vh,600px)] md:min-h-0 md:h-full md:flex-1">
             <AvatarViewer
               language={language}
               selectedService={selectedService}

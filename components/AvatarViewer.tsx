@@ -10,10 +10,10 @@ interface Props {
 
 const AGENT_URL = 'https://bey.chat/f25dd3c0-9cf2-461a-b44a-f7941994b8d4'
 
-/** Matches Bey welcome card: portrait on mobile, landscape on desktop */
+/** Portrait 9:16 on mobile; landscape 5:4 on desktop (matches Bey card) */
 const frameClassName = [
-  'relative overflow-hidden rounded-2xl border-2',
-  'mx-auto w-full max-w-sm aspect-[3/4] max-h-[min(70vh,560px)]',
+  'relative isolate overflow-hidden rounded-2xl border-2 [transform:translateZ(0)]',
+  'mx-auto w-full max-w-sm aspect-[9/16] max-h-[min(72vh,600px)]',
   'md:mx-0 md:max-h-full md:max-w-none md:w-full md:aspect-[5/4] md:max-h-none',
 ].join(' ')
 
@@ -45,12 +45,21 @@ export default function AvatarViewer({ selectedService }: Props) {
 
   return (
     <AvatarFrame className="border-yellow-400/50 bg-black">
-      <iframe
-        src={AGENT_URL}
-        title="Rathna AI assistant"
-        className="absolute inset-0 h-full w-full border-0"
-        allow="camera; microphone; fullscreen"
-      />
+      <div className="absolute inset-0 overflow-hidden bg-black [transform:translateZ(0)]">
+        <iframe
+          src={AGENT_URL}
+          title="Rathna AI assistant"
+          className="absolute inset-0 h-full w-full touch-manipulation border-0 [transform:translateZ(0)]"
+          allow="camera; microphone; fullscreen"
+        />
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-9 bg-gradient-to-t from-gray-950 from-50% to-transparent md:hidden"
+          aria-hidden
+        />
+      </div>
     </AvatarFrame>
   )
 }
+
+
+
