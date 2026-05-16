@@ -1,7 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import PassportForm, { PassportFormData } from '@/components/PassportForm'
+
+import PassportForm, {
+  PassportFormData
+} from '@/components/PassportForm'
+
+import GNForm from '@/components/GNForm'
+import BusinessForm from '@/components/BusinessForm'
+
 import AvatarViewer from '@/components/AvatarViewer'
 
 const emptyPassportForm: PassportFormData = {
@@ -18,9 +25,32 @@ const emptyPassportForm: PassportFormData = {
 }
 
 export default function Home() {
-  const [language, setLanguage] = useState<'en' | 'si' | 'ta'>('en')
-  const [selectedService, setSelectedService] = useState<string | null>(null)
-  const [passportData, setPassportData] = useState<PassportFormData>(emptyPassportForm)
+
+  const [language, setLanguage] =
+    useState<'en' | 'si' | 'ta'>('en')
+
+  const [selectedService, setSelectedService] =
+    useState<string | null>(null)
+
+  const [passportData, setPassportData] =
+    useState<PassportFormData>(emptyPassportForm)
+
+  const [gnData, setGnData] = useState({
+    fullName: '',
+    nationalId: '',
+    address: '',
+    reason: '',
+    district: '',
+  })
+
+  const [businessData, setBusinessData] = useState({
+    businessName: '',
+    ownerName: '',
+    nationalId: '',
+    businessAddress: '',
+    businessType: '',
+    district: '',
+  })
 
   const labels = {
     en: {
@@ -31,6 +61,7 @@ export default function Home() {
       gn: '📄 Grama Niladhari Certificate',
       business: '🏢 Business Registration',
     },
+
     si: {
       title: 'රත්න',
       subtitle: 'ඔබේ AI රජයේ සේවාව',
@@ -39,6 +70,7 @@ export default function Home() {
       gn: '📄 ග්‍රාම නිලධාරී සහතිකය',
       business: '🏢 ව්‍යාපාර ලියාපදිංචිය',
     },
+
     ta: {
       title: 'ரத்னா',
       subtitle: 'உங்கள் AI அரசாங்க உதவியாளர்',
@@ -52,8 +84,26 @@ export default function Home() {
   const t = labels[language]
 
   function handleFormData(data: Record<string, string>) {
+
     if (selectedService === 'passport') {
-      setPassportData(prev => ({ ...prev, ...data }))
+      setPassportData(prev => ({
+        ...prev,
+        ...data
+      }))
+    }
+
+    if (selectedService === 'gn') {
+      setGnData(prev => ({
+        ...prev,
+        ...data
+      }))
+    }
+
+    if (selectedService === 'business') {
+      setBusinessData(prev => ({
+        ...prev,
+        ...data
+      }))
     }
   }
 
@@ -62,15 +112,25 @@ export default function Home() {
 
       {/* Header */}
       <header className="safe-padding-x flex w-full shrink-0 flex-col items-center gap-3 border-b border-gray-800 px-4 py-4 sm:flex-row sm:justify-between sm:px-6 md:px-8">
+
         <div className="flex items-center gap-3">
           <span className="text-2xl">🇱🇰</span>
+
           <div>
-            <h1 className="text-2xl font-bold text-yellow-400">{t.title}</h1>
-            <p className="text-xs text-gray-400">{t.subtitle}</p>
+            <h1 className="text-2xl font-bold text-yellow-400">
+              {t.title}
+            </h1>
+
+            <p className="text-xs text-gray-400">
+              {t.subtitle}
+            </p>
           </div>
         </div>
+
         <div className="flex flex-wrap justify-center gap-2">
+
           {(['en', 'si', 'ta'] as const).map((lang) => (
+
             <button
               key={lang}
               type="button"
@@ -82,10 +142,17 @@ export default function Home() {
                   : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
               }`}
             >
-              {lang === 'en' ? 'English' : lang === 'si' ? 'සිංහල' : 'தமிழ்'}
+              {lang === 'en'
+                ? 'English'
+                : lang === 'si'
+                ? 'සිංහල'
+                : 'தமிழ்'}
             </button>
+
           ))}
+
         </div>
+
       </header>
 
       {/* Main Content */}
@@ -93,6 +160,7 @@ export default function Home() {
 
         {/* Left — Avatar */}
         <div className="mx-auto flex w-full max-w-lg shrink-0 flex-col items-center gap-3 border-b border-gray-800 p-4 md:mx-0 md:max-w-none md:w-1/2 md:min-h-0 md:shrink md:gap-4 md:border-b-0 md:border-r md:p-6">
+
           <div
             className={`flex w-full max-w-sm items-center justify-center overscroll-contain px-2 md:min-h-0 md:h-full md:max-w-none md:flex-1 ${
               selectedService
@@ -100,54 +168,75 @@ export default function Home() {
                 : 'max-md:min-h-0'
             }`}
           >
+
             <AvatarViewer
               language={language}
               selectedService={selectedService}
               onFormDataReceived={handleFormData}
             />
+
           </div>
+
           <div
             className={`mx-auto w-full max-w-sm shrink-0 rounded-xl bg-gray-800 p-4 text-center ${
               selectedService ? '' : 'max-md:hidden'
             }`}
           >
+
             <p className="text-gray-300 text-sm">
               {selectedService
                 ? 'Speak to Rathna to fill your form'
                 : t.selectService}
             </p>
+
           </div>
+
         </div>
 
         {/* Right — Form */}
         <div className="mx-auto flex w-full max-w-lg min-w-0 flex-1 flex-col p-4 max-md:px-0 max-md:pb-6 md:mx-0 md:max-w-none md:w-1/2 md:min-h-0 md:p-8 md:overflow-y-auto">
+
           {!selectedService ? (
+
             <div className="flex-1 flex flex-col items-center justify-center">
+
               <div className="w-full max-w-md space-y-4">
+
                 <h2 className="text-xl font-semibold text-center mb-8 text-gray-200">
                   {t.selectService}
                 </h2>
+
                 {[
                   { id: 'passport', label: t.passport },
                   { id: 'gn', label: t.gn },
                   { id: 'business', label: t.business },
                 ].map((service) => (
+
                   <button
                     key={service.id}
                     type="button"
                     onClick={() => setSelectedService(service.id)}
                     className="group w-full rounded-xl border border-gray-700 bg-gray-800 p-5 text-left transition-all hover:border-yellow-400 hover:bg-gray-700"
                   >
+
                     <span className="text-base leading-snug break-words transition-colors group-hover:text-yellow-400 sm:text-lg">
                       {service.label}
                     </span>
+
                   </button>
+
                 ))}
+
               </div>
+
             </div>
+
           ) : (
+
             <div className="flex w-full min-w-0 flex-col">
+
               <div className="mb-4 flex min-w-0 items-start gap-2 max-md:sticky max-md:top-0 max-md:z-20 max-md:bg-gray-950 max-md:py-2">
+
                 <button
                   type="button"
                   onClick={() => {
@@ -158,28 +247,35 @@ export default function Home() {
                 >
                   ← Back
                 </button>
+
                 <h2 className="min-w-0 flex-1 text-base font-semibold leading-snug text-yellow-400 sm:text-lg">
-                  {selectedService === 'passport' ? t.passport
-                    : selectedService === 'gn' ? t.gn
+
+                  {selectedService === 'passport'
+                    ? t.passport
+                    : selectedService === 'gn'
+                    ? t.gn
                     : t.business}
+
                 </h2>
+
               </div>
 
               {selectedService === 'passport' && (
                 <PassportForm formData={passportData} />
               )}
+
               {selectedService === 'gn' && (
-                <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                  <p className="text-gray-400 text-center">GN Form coming next</p>
-                </div>
+                <GNForm formData={gnData} />
               )}
+
               {selectedService === 'business' && (
-                <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                  <p className="text-gray-400 text-center">Business Form coming next</p>
-                </div>
+                <BusinessForm formData={businessData} />
               )}
+
             </div>
+
           )}
+
         </div>
 
       </main>

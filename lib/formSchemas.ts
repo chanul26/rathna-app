@@ -22,3 +22,85 @@ export const passportSchema = {
       additionalProperties: false
     }
   }
+  export const gnSchema = {
+    name: "gn_extraction",
+    description: "Extracts information for a Grama Niladhari certificate",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
+        fullName: {
+          type: "string",
+          description: "The user's full name."
+        },
+        nationalId: {
+          type: "string",
+          description: "NIC number."
+        },
+        address: {
+          type: "string",
+          description: "Permanent address."
+        },
+        reason: {
+          type: "string",
+          description: "Reason for requesting the certificate."
+        },
+        district: {
+          type: "string",
+          description: "District in Sri Lanka."
+        }
+      },
+      required: [
+        "fullName",
+        "nationalId",
+        "address",
+        "reason",
+        "district"
+      ],
+      additionalProperties: false
+    }
+  };
+  
+  export const businessSchema = {
+    name: "business_extraction",
+    description: "Extracts information for business registration",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
+        businessName: {
+          type: "string",
+          description: "Name of the business."
+        },
+        ownerName: {
+          type: "string",
+          description: "Full name of the owner."
+        },
+        nationalId: {
+          type: "string",
+          description: "NIC number."
+        },
+        businessAddress: {
+          type: "string",
+          description: "Business address."
+        },
+        businessType: {
+          type: "string",
+          description: "Type of business."
+        },
+        district: {
+          type: "string",
+          description: "District where business operates."
+        }
+      },
+      required: [
+        "businessName",
+        "ownerName",
+        "nationalId",
+        "businessAddress",
+        "businessType",
+        "district"
+      ],
+      additionalProperties: false
+    }
+  };
