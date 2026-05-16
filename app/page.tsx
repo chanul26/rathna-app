@@ -58,10 +58,10 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col">
+    <div className="flex min-h-screen w-full flex-col overflow-x-hidden bg-gray-950 text-white">
 
       {/* Header */}
-      <header className="flex items-center justify-between px-8 py-4 border-b border-gray-800">
+      <header className="flex w-full flex-col items-center gap-3 border-b border-gray-800 px-4 py-4 sm:flex-row sm:justify-between sm:px-6 md:px-8">
         <div className="flex items-center gap-3">
           <span className="text-2xl">🇱🇰</span>
           <div>
@@ -69,12 +69,12 @@ export default function Home() {
             <p className="text-xs text-gray-400">{t.subtitle}</p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap justify-center gap-2">
           {(['en', 'si', 'ta'] as const).map((lang) => (
             <button
               key={lang}
               onClick={() => setLanguage(lang)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              className={`rounded-full px-3 py-1.5 text-sm font-medium transition-all sm:px-4 sm:py-2 ${
                 language === lang
                   ? 'bg-yellow-400 text-gray-950'
                   : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
@@ -87,18 +87,28 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row md:overflow-hidden">
+      <main className="flex min-h-0 w-full flex-1 flex-col items-center overflow-x-hidden overflow-y-auto max-md:px-4 md:flex-row md:items-stretch md:overflow-hidden md:px-0">
 
         {/* Left — Avatar */}
-        <div className="flex w-full shrink-0 flex-col items-center gap-3 border-b border-gray-800 p-4 md:w-1/2 md:min-h-0 md:shrink md:gap-4 md:border-b-0 md:border-r md:p-6">
-          <div className="flex w-full items-center justify-center overscroll-contain px-2 max-md:min-h-[min(72vh,600px)] md:min-h-0 md:h-full md:flex-1">
+        <div className="mx-auto flex w-full max-w-lg shrink-0 flex-col items-center gap-3 border-b border-gray-800 p-4 md:mx-0 md:max-w-none md:w-1/2 md:min-h-0 md:shrink md:gap-4 md:border-b-0 md:border-r md:p-6">
+          <div
+            className={`flex w-full max-w-sm items-center justify-center overscroll-contain px-2 md:min-h-0 md:h-full md:max-w-none md:flex-1 ${
+              selectedService
+                ? 'max-md:min-h-[min(50vh,420px)]'
+                : 'max-md:min-h-0'
+            }`}
+          >
             <AvatarViewer
               language={language}
               selectedService={selectedService}
               onFormDataReceived={handleFormData}
             />
           </div>
-          <div className="w-full max-w-sm shrink-0 bg-gray-800 rounded-xl p-4 text-center">
+          <div
+            className={`mx-auto w-full max-w-sm shrink-0 rounded-xl bg-gray-800 p-4 text-center ${
+              selectedService ? '' : 'max-md:hidden'
+            }`}
+          >
             <p className="text-gray-300 text-sm">
               {selectedService
                 ? 'Speak to Rathna to fill your form'
@@ -108,7 +118,7 @@ export default function Home() {
         </div>
 
         {/* Right — Form */}
-        <div className="flex w-full flex-1 flex-col p-4 md:w-1/2 md:min-h-0 md:p-8 md:overflow-y-auto">
+        <div className="mx-auto flex w-full max-w-lg flex-1 flex-col p-4 max-md:px-0 max-md:pb-6 md:mx-0 md:max-w-none md:w-1/2 md:min-h-0 md:p-8 md:overflow-y-auto">
           {!selectedService ? (
             <div className="flex-1 flex flex-col items-center justify-center">
               <div className="w-full max-w-md space-y-4">
@@ -134,17 +144,18 @@ export default function Home() {
             </div>
           ) : (
             <div className="w-full h-full flex flex-col">
-              <div className="flex items-center gap-3 mb-4">
+              <div className="mb-4 flex min-w-0 items-start gap-2">
                 <button
+                  type="button"
                   onClick={() => {
                     setSelectedService(null)
                     setPassportData(emptyPassportForm)
                   }}
-                  className="text-gray-400 hover:text-white text-sm"
+                  className="shrink-0 pt-0.5 text-sm text-gray-400 hover:text-white"
                 >
                   ← Back
                 </button>
-                <h2 className="text-lg font-semibold text-yellow-400">
+                <h2 className="min-w-0 flex-1 text-base font-semibold leading-snug text-yellow-400 sm:text-lg">
                   {selectedService === 'passport' ? t.passport
                     : selectedService === 'gn' ? t.gn
                     : t.business}

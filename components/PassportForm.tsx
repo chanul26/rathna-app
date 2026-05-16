@@ -36,8 +36,10 @@ export default function PassportForm({ formData }: Props) {
   return (
     <div className="w-full h-full overflow-y-auto">
       {/* Form Header */}
-      <div className="bg-blue-900/40 border border-blue-700/50 rounded-xl p-4 mb-4 text-center">
-        <p className="text-xs text-blue-300 font-medium">SRI LANKA DEPARTMENT OF IMMIGRATION & EMIGRATION</p>
+      <div className="mb-4 rounded-xl border border-blue-700/50 bg-blue-900/40 p-4 text-center">
+        <p className="text-xs font-medium break-words text-blue-300">
+          SRI LANKA DEPARTMENT OF IMMIGRATION & EMIGRATION
+        </p>
         <h3 className="text-white font-bold text-lg mt-1">Passport Application Form</h3>
         <p className="text-xs text-gray-400 mt-1">Speak to Rathna to fill this form automatically</p>
       </div>

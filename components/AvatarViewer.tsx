@@ -13,7 +13,7 @@ const AGENT_URL = 'https://bey.chat/f25dd3c0-9cf2-461a-b44a-f7941994b8d4'
 /** Portrait 9:16 on mobile; landscape 5:4 on desktop (matches Bey card) */
 const frameClassName = [
   'relative isolate overflow-hidden rounded-2xl border-2 [transform:translateZ(0)]',
-  'mx-auto w-full max-w-sm aspect-[9/16] max-h-[min(72vh,600px)]',
+  'mx-auto w-full max-w-[min(100%,20rem)] aspect-[9/16] max-h-[min(72vh,600px)]',
   'md:mx-0 md:max-h-full md:max-w-none md:w-full md:aspect-[5/4] md:max-h-none',
 ].join(' ')
 
