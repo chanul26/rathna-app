@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "GovMind — Your AI Government Assistant",
-  description: "AI assistant for Sri Lankan government services",
+  description:
+    "GovMind — AI voice assistant for Sri Lankan passport, GN, business, and other government forms",
 };
 
 export const viewport = {

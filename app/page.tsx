@@ -123,7 +123,7 @@ const labels = {
   },
   si: {
     title: 'GovMind',
-    subtitle: 'ඔබේ AI රජයේ සේවාව',
+    subtitle: 'GovMind — ඔබේ AI රජයේ සේවාව',
     selectService: 'අද ඔබට කුමක් අවශ්‍යද?',
     passport: '🛂 ගමන් බලපත්‍ර අයදුම්පත',
     gn: '📄 ග්‍රාම නිලධාරී සහතිකය',
@@ -135,7 +135,7 @@ const labels = {
   },
   ta: {
     title: 'GovMind',
-    subtitle: 'உங்கள் AI அரசாங்க உதவியாளர்',
+    subtitle: 'GovMind — உங்கள் AI அரசாங்க உதவியாளர்',
     selectService: 'இன்று உங்களுக்கு என்ன உதவி வேண்டும்?',
     passport: '🛂 கடவுச்சீட்டு விண்ணப்பம்',
     gn: '📄 கிராம அலுவலர் சான்றிதழ்',

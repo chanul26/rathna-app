@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
 import { getAgentId } from '@/lib/beyApi'
-import { createRathnaSessionAgent } from '@/lib/createRathnaSessionAgent'
+import { createGovMindSessionAgent } from '@/lib/createGovMindSessionAgent'
 import { isFormService, type FormService } from '@/lib/formSchemas'
-import type { RathnaLanguage } from '@/lib/rathnaAgentPrompt'
+import type { GovMindLanguage } from '@/lib/govMindAgentPrompt'
 
 export const dynamic = 'force-dynamic'
 
-function parseLanguage(value: string | null): RathnaLanguage {
+function parseLanguage(value: string | null): GovMindLanguage {
   if (value === 'si' || value === 'ta') return value
   return 'en'
 }
@@ -35,7 +35,7 @@ export async function GET(req: Request) {
     })
   }
 
-  const session = await createRathnaSessionAgent(service, language)
+  const session = await createGovMindSessionAgent(service, language)
   if (!session) {
     return NextResponse.json(
       {

@@ -5,22 +5,22 @@ import {
   type CreateAgentPayload,
 } from '@/lib/beyApi'
 import {
-  buildRathnaAgentName,
-  buildRathnaGreeting,
-  buildRathnaSystemPrompt,
-  type RathnaLanguage,
-} from '@/lib/rathnaAgentPrompt'
+  buildGovMindAgentName,
+  buildGovMindGreeting,
+  buildGovMindSystemPrompt,
+  type GovMindLanguage,
+} from '@/lib/govMindAgentPrompt'
 import type { FormService } from '@/lib/formSchemas'
 
-export interface RathnaSessionAgent {
+export interface GovMindSessionAgent {
   agentId: string
   embedUrl: string
 }
 
-export async function createRathnaSessionAgent(
+export async function createGovMindSessionAgent(
   service: FormService,
-  language: RathnaLanguage,
-): Promise<RathnaSessionAgent | null> {
+  language: GovMindLanguage,
+): Promise<GovMindSessionAgent | null> {
   const baseAgentId = getAgentId()
   if (!baseAgentId) return null
 
@@ -28,10 +28,10 @@ export async function createRathnaSessionAgent(
   if (!base?.avatar_id) return null
 
   const payload: CreateAgentPayload = {
-    name: buildRathnaAgentName(service),
+    name: buildGovMindAgentName(service),
     avatar_id: base.avatar_id,
-    system_prompt: buildRathnaSystemPrompt(service, language),
-    greeting: buildRathnaGreeting(service, language),
+    system_prompt: buildGovMindSystemPrompt(service, language),
+    greeting: buildGovMindGreeting(service, language),
     language: 'en',
   }
 
