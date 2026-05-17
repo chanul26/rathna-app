@@ -65,6 +65,7 @@ export default function Home() {
   const [conversationEpoch, setConversationEpoch] = useState(0)
   const conversationEpochRef = useRef(0)
   const analyzeAbortRef = useRef<AbortController | null>(null)
+  const activeAgentIdRef = useRef<string | null>(null)
   const activeCallIdRef = useRef<string | null>(null)
   const completedCallIdsRef = useRef<string[]>([])
   const lastMessageCountRef = useRef(0)
@@ -117,6 +118,7 @@ export default function Home() {
         activeCallIdRef.current,
       ]
     }
+    activeAgentIdRef.current = null
     activeCallIdRef.current = null
     lastMessageCountRef.current = 0
     sessionStartedAtRef.current = new Date().toISOString()
@@ -129,6 +131,7 @@ export default function Home() {
     analyzeAbortRef.current?.abort()
     analyzeAbortRef.current = null
     completedCallIdsRef.current = []
+    activeAgentIdRef.current = null
     activeCallIdRef.current = null
     lastMessageCountRef.current = 0
     sessionStartedAtRef.current = new Date().toISOString()
@@ -136,6 +139,12 @@ export default function Home() {
     setConversationEpoch(conversationEpochRef.current)
     clearForms()
   }, [clearForms])
+
+  const handleAgentIdChange = useCallback((agentId: string | null) => {
+    activeAgentIdRef.current = agentId
+    activeCallIdRef.current = null
+    lastMessageCountRef.current = 0
+  }, [])
 
   const applyFormData = useCallback(
     (data: Record<string, string>) => {
@@ -176,6 +185,9 @@ export default function Home() {
         completed: completedCallIdsRef.current.join(','),
         sessionStartedAt: sessionStartedAtRef.current,
       })
+      if (activeAgentIdRef.current) {
+        params.set('agentId', activeAgentIdRef.current)
+      }
       if (activeCallIdRef.current) {
         params.set('activeCallId', activeCallIdRef.current)
       }
@@ -277,7 +289,7 @@ export default function Home() {
               language={language}
               selectedService={selectedService}
               conversationKey={conversationEpoch}
-              onFormDataReceived={applyFormData}
+              onAgentIdChange={handleAgentIdChange}
             />
           </div>
           <div

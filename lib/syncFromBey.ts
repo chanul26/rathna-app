@@ -12,6 +12,7 @@ import type { FormService } from '@/lib/formSchemas'
 
 export interface BeySyncInput {
   service: FormService
+  agentId: string | null
   activeCallId: string | null
   completedCallIds: string[]
   lastMessageCount: number
@@ -40,7 +41,7 @@ export async function syncFormFromBey(
     ...overrides,
   })
 
-  const agentId = getAgentId()
+  const agentId = input.agentId ?? getAgentId()
   if (!agentId || !process.env.BEYOND_PRESENCE_API_KEY) {
     return emptyResult()
   }

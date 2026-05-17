@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { generatePassportPDF } from '@/lib/generatePDF'
+import { generatePassportPDF, printPassportPDF } from '@/lib/generatePDF'
 
 export interface PassportFormData {
   surname: string
@@ -113,15 +113,26 @@ export default function PassportForm({ formData }: Props) {
         </div>
 
         {isComplete && (
-          <motion.button
-            type="button"
+          <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            onClick={() => generatePassportPDF(formData)}
-            className="w-full rounded-xl border border-yellow-400/60 bg-yellow-400 px-4 py-3 text-sm font-semibold text-gray-950 transition-colors hover:bg-yellow-300"
+            className="flex flex-col gap-2 sm:flex-row"
           >
-            Download PDF
-          </motion.button>
+            <button
+              type="button"
+              onClick={() => printPassportPDF(formData)}
+              className="flex-1 rounded-xl border border-gray-600 bg-gray-800 px-4 py-3 text-sm font-semibold text-white transition-colors hover:border-yellow-400/60 hover:bg-gray-700"
+            >
+              Print
+            </button>
+            <button
+              type="button"
+              onClick={() => generatePassportPDF(formData)}
+              className="flex-1 rounded-xl border border-yellow-400/60 bg-yellow-400 px-4 py-3 text-sm font-semibold text-gray-950 transition-colors hover:bg-yellow-300"
+            >
+              Download PDF
+            </button>
+          </motion.div>
         )}
       </div>
     </div>

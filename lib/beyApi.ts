@@ -24,6 +24,70 @@ export function getAgentId(): string | null {
   return process.env.BEYOND_PRESENCE_AGENT_ID ?? null
 }
 
+export interface BeyAgentConfig {
+  id: string
+  avatar_id: string
+  capabilities?: CreateAgentPayload['capabilities']
+  llm?: CreateAgentPayload['llm']
+  max_session_length_minutes?: number | null
+}
+
+export interface CreateAgentPayload {
+  name: string
+  avatar_id: string
+  system_prompt: string
+  greeting?: string
+  language?: string
+  max_session_length_minutes?: number
+  capabilities?: Array<{ type: string; triggers?: string[] }>
+  llm?: { type: string; api_id?: string; model?: string; temperature?: number }
+}
+
+export async function retrieveAgent(
+  agentId: string,
+): Promise<BeyAgentConfig | null> {
+  const apiKey = getApiKey()
+  if (!apiKey) return null
+
+  const res = await fetch(`${BEY_API_BASE}/agents/${agentId}`, {
+    headers: { 'x-api-key': apiKey },
+    cache: 'no-store',
+  })
+
+  if (!res.ok) {
+    console.error('Bey retrieve agent failed:', res.status, await res.text())
+    return null
+  }
+
+  const json = (await res.json()) as BeyAgentConfig
+  return json?.id && json?.avatar_id ? json : null
+}
+
+export async function createAgent(
+  payload: CreateAgentPayload,
+): Promise<{ id: string } | null> {
+  const apiKey = getApiKey()
+  if (!apiKey) return null
+
+  const res = await fetch(`${BEY_API_BASE}/agents`, {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+    cache: 'no-store',
+  })
+
+  if (!res.ok) {
+    console.error('Bey create agent failed:', res.status, await res.text())
+    return null
+  }
+
+  const json = (await res.json()) as { id?: string }
+  return json?.id ? { id: json.id } : null
+}
+
 export async function listCalls(limit = 15): Promise<BeyCall[]> {
   const apiKey = getApiKey()
   if (!apiKey) return []

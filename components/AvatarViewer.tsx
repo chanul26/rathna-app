@@ -6,7 +6,7 @@ interface Props {
   language: 'en' | 'si' | 'ta'
   selectedService: string | null
   conversationKey: number
-  onFormDataReceived: (data: Record<string, string>) => void
+  onAgentIdChange: (agentId: string | null) => void
 }
 
 const languageTitles: Record<Props['language'], string> = {
@@ -45,29 +45,71 @@ export default function AvatarViewer({
   language,
   selectedService,
   conversationKey,
-  onFormDataReceived,
+  onAgentIdChange,
 }: Props) {
-  void onFormDataReceived
-
   const [embedUrl, setEmbedUrl] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [sessionError, setSessionError] = useState<string | null>(null)
   const regionLabel = languageTitles[language]
 
   useEffect(() => {
-    let cancelled = false
+    if (!selectedService) {
+      setEmbedUrl(null)
+      setSessionError(null)
+      onAgentIdChange(null)
+      return
+    }
 
-    fetch('/api/avatar-session', { cache: 'no-store' })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: { embedUrl?: string } | null) => {
-        if (!cancelled && data?.embedUrl) {
-          setEmbedUrl(data.embedUrl)
+    let cancelled = false
+    setLoading(true)
+    setSessionError(null)
+    setEmbedUrl(null)
+    onAgentIdChange(null)
+
+    const params = new URLSearchParams({
+      service: selectedService,
+      language,
+    })
+
+    fetch(`/api/avatar-session?${params}`, { cache: 'no-store' })
+      .then((res) => res.json())
+      .then(
+        (data: {
+          embedUrl?: string
+          agentId?: string
+          error?: string
+          useBaseAgent?: boolean
+        }) => {
+          if (cancelled) return
+
+          if (data.embedUrl && data.agentId) {
+            setEmbedUrl(data.embedUrl)
+            onAgentIdChange(data.agentId)
+            if (data.useBaseAgent && selectedService !== 'passport') {
+              setSessionError(
+                'Using default agent — GN/Business prompts may not apply. Check API key permissions.',
+              )
+            }
+          } else {
+            setSessionError(data.error ?? 'Could not load Rathna')
+            onAgentIdChange(null)
+          }
+        },
+      )
+      .catch(() => {
+        if (!cancelled) {
+          setSessionError('Could not connect to Rathna')
+          onAgentIdChange(null)
         }
       })
-      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
 
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [selectedService, language, conversationKey, onAgentIdChange])
 
   if (!selectedService) {
     return (
@@ -85,7 +127,7 @@ export default function AvatarViewer({
     )
   }
 
-  if (!embedUrl) {
+  if (loading || !embedUrl) {
     return (
       <AvatarFrame
         label={regionLabel}
@@ -97,16 +139,23 @@ export default function AvatarViewer({
   }
 
   return (
-    <AvatarFrame label={regionLabel} className="border-yellow-400/50 bg-black">
-      <div className="absolute inset-0 overflow-hidden bg-black">
-        <iframe
-          key={`${conversationKey}-${embedUrl}`}
-          src={embedUrl}
-          title={regionLabel}
-          className="h-full w-full touch-manipulation border-0"
-          allow="camera; microphone; fullscreen"
-        />
-      </div>
-    </AvatarFrame>
+    <div className="flex w-full flex-col items-center gap-2">
+      {sessionError && (
+        <p className="max-w-sm px-2 text-center text-xs text-amber-400/90">
+          {sessionError}
+        </p>
+      )}
+      <AvatarFrame label={regionLabel} className="border-yellow-400/50 bg-black">
+        <div className="absolute inset-0 overflow-hidden bg-black">
+          <iframe
+            key={`${conversationKey}-${embedUrl}`}
+            src={embedUrl}
+            title={regionLabel}
+            className="h-full w-full touch-manipulation border-0"
+            allow="camera; microphone; fullscreen"
+          />
+        </div>
+      </AvatarFrame>
+    </div>
   )
 }

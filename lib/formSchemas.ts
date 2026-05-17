@@ -34,18 +34,29 @@ export const gnSchema = {
     properties: {
       fullName: {
         type: 'string',
-        description: 'Full legal name of the applicant.',
+        description:
+          'Full legal name of the applicant. Leave empty string if not mentioned.',
       },
       nationalId: {
         type: 'string',
-        description: 'Sri Lankan NIC number.',
+        description:
+          'Sri Lankan NIC number (9 digits with V/X or 12 digits). Leave empty string if not mentioned.',
       },
-      address: { type: 'string', description: 'Residential address.' },
+      address: {
+        type: 'string',
+        description:
+          'Residential address. Leave empty string if not mentioned.',
+      },
       reason: {
         type: 'string',
-        description: 'Reason for requesting the certificate.',
+        description:
+          'Reason for requesting the certificate (e.g. bank loan, visa). Leave empty string if not mentioned.',
       },
-      district: { type: 'string', description: 'District in Sri Lanka.' },
+      district: {
+        type: 'string',
+        description:
+          'District of residence in Sri Lanka. Leave empty string if not mentioned.',
+      },
     },
     required: ['fullName', 'nationalId', 'address', 'reason', 'district'],
     additionalProperties: false,
@@ -59,15 +70,36 @@ export const businessSchema = {
   schema: {
     type: 'object',
     properties: {
-      businessName: { type: 'string', description: 'Registered business name.' },
-      ownerName: { type: 'string', description: 'Owner full name.' },
-      nationalId: { type: 'string', description: 'Owner NIC number.' },
-      businessAddress: { type: 'string', description: 'Business address.' },
+      businessName: {
+        type: 'string',
+        description:
+          'Registered or trading business name. Leave empty string if not mentioned.',
+      },
+      ownerName: {
+        type: 'string',
+        description:
+          'Owner full legal name. Leave empty string if not mentioned.',
+      },
+      nationalId: {
+        type: 'string',
+        description:
+          'Owner NIC number. Leave empty string if not mentioned.',
+      },
+      businessAddress: {
+        type: 'string',
+        description:
+          'Business premises address. Leave empty string if not mentioned.',
+      },
       businessType: {
         type: 'string',
-        description: 'Type of business, e.g. retail, restaurant.',
+        description:
+          'Type of business (e.g. retail shop, restaurant). Leave empty string if not mentioned.',
       },
-      district: { type: 'string', description: 'District in Sri Lanka.' },
+      district: {
+        type: 'string',
+        description:
+          'District where the business operates. Leave empty string if not mentioned.',
+      },
     },
     required: [
       'businessName',

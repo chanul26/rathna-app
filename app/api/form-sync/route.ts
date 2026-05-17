@@ -18,6 +18,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Invalid service' }, { status: 400 })
   }
 
+  const agentId = searchParams.get('agentId') || null
   const activeCallId = searchParams.get('activeCallId') || null
   const completedRaw = searchParams.get('completed') || ''
   const completedCallIds = completedRaw
@@ -35,6 +36,7 @@ export async function GET(req: Request) {
   try {
     const result = await syncFormFromBey({
       service,
+      agentId,
       activeCallId,
       completedCallIds,
       lastMessageCount,
