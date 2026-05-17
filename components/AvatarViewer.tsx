@@ -1,14 +1,13 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 
 interface Props {
   language: 'en' | 'si' | 'ta'
   selectedService: string | null
-  onFormDataReceived: (data: Record<string, string>) => void
+  conversationKey: number
+  onAgentIdChange: (agentId: string | null) => void
 }
-
-const AGENT_URL = 'https://bey.chat/f25dd3c0-9cf2-461a-b44a-f7941994b8d4'
 
 const languageTitles: Record<Props['language'], string> = {
   en: 'Talk to Rathna',
@@ -16,7 +15,6 @@ const languageTitles: Record<Props['language'], string> = {
   ta: 'ரத்னாவுடன் பேசுங்கள்',
 }
 
-/** Portrait 9:16 on mobile; landscape 5:4 on desktop (matches Bey card) */
 const frameClassName = [
   'relative isolate overflow-hidden rounded-2xl border-2 [transform:translateZ(0)]',
   'mx-auto w-full max-w-[min(100%,20rem)] aspect-[9/16] max-h-[min(72vh,600px)]',
@@ -46,12 +44,71 @@ function AvatarFrame({
 export default function AvatarViewer({
   language,
   selectedService,
-  onFormDataReceived,
+  conversationKey,
+  onAgentIdChange,
 }: Props) {
-  // Reserved for Bey postMessage / webhook integration
-  void onFormDataReceived
-
+  const [embedUrl, setEmbedUrl] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [sessionError, setSessionError] = useState<string | null>(null)
   const regionLabel = languageTitles[language]
+
+  useEffect(() => {
+    if (!selectedService) {
+      setEmbedUrl(null)
+      setSessionError(null)
+      onAgentIdChange(null)
+      return
+    }
+
+    let cancelled = false
+    setLoading(true)
+    setSessionError(null)
+    setEmbedUrl(null)
+    onAgentIdChange(null)
+
+    const params = new URLSearchParams({
+      service: selectedService,
+      language,
+    })
+
+    fetch(`/api/avatar-session?${params}`, { cache: 'no-store' })
+      .then(async (res) => {
+        const data = (await res.json()) as {
+          embedUrl?: string
+          agentId?: string
+          error?: string
+          useBaseAgent?: boolean
+        }
+        if (cancelled) return
+
+        if (res.ok && data.embedUrl && data.agentId) {
+            setEmbedUrl(data.embedUrl)
+            onAgentIdChange(data.agentId)
+            if (data.useBaseAgent && selectedService !== 'passport') {
+              setSessionError(
+                'Using default agent — GN/Business prompts may not apply. Check API key permissions.',
+              )
+            }
+          return
+        }
+
+        setSessionError(data.error ?? 'Could not load Rathna')
+        onAgentIdChange(null)
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSessionError('Could not connect to Rathna')
+          onAgentIdChange(null)
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [selectedService, language, conversationKey, onAgentIdChange])
 
   if (!selectedService) {
     return (
@@ -69,20 +126,35 @@ export default function AvatarViewer({
     )
   }
 
+  if (loading || !embedUrl) {
+    return (
+      <AvatarFrame
+        label={regionLabel}
+        className="flex items-center justify-center border-yellow-400/30 bg-gray-800"
+      >
+        <p className="text-sm text-gray-400">Loading Rathna…</p>
+      </AvatarFrame>
+    )
+  }
+
   return (
-    <AvatarFrame label={regionLabel} className="border-yellow-400/50 bg-black">
-      <div className="absolute inset-0 overflow-hidden bg-black [transform:translateZ(0)]">
-        <iframe
-          src={AGENT_URL}
-          title={regionLabel}
-          className="absolute inset-0 h-full w-full touch-manipulation border-0 [transform:translateZ(0)]"
-          allow="camera; microphone; fullscreen"
-        />
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-10 bg-gradient-to-t from-gray-950 from-55% to-transparent md:hidden"
-          aria-hidden
-        />
-      </div>
-    </AvatarFrame>
+    <div className="flex w-full flex-col items-center gap-2">
+      {sessionError && (
+        <p className="max-w-sm px-2 text-center text-xs text-amber-400/90">
+          {sessionError}
+        </p>
+      )}
+      <AvatarFrame label={regionLabel} className="border-yellow-400/50 bg-black">
+        <div className="absolute inset-0 overflow-hidden bg-black">
+          <iframe
+            key={`${conversationKey}-${embedUrl}`}
+            src={embedUrl}
+            title={regionLabel}
+            className="h-full w-full touch-manipulation border-0"
+            allow="camera; microphone; fullscreen"
+          />
+        </div>
+      </AvatarFrame>
+    </div>
   )
 }
