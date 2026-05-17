@@ -1,6 +1,44 @@
 'use client'
 
+import { motion } from 'framer-motion'
+import Image from 'next/image'
 import { useEffect, useState, type ReactNode } from 'react'
+
+const logoPulse = {
+  scale: [1, 1.05, 1],
+  boxShadow: [
+    '0 0 0 0 rgba(250, 204, 21, 0.15)',
+    '0 0 0 8px rgba(250, 204, 21, 0)',
+    '0 0 0 0 rgba(250, 204, 21, 0.15)',
+  ],
+}
+
+const logoPulseTransition = {
+  duration: 2.5,
+  repeat: Infinity,
+  ease: 'easeInOut' as const,
+}
+
+function GovMindLogo({ size = 80 }: { size?: number }) {
+  return (
+    <motion.div
+      className="relative mx-auto mb-4 overflow-hidden rounded-full ring-2 ring-yellow-400/40"
+      style={{ width: size, height: size }}
+      animate={logoPulse}
+      transition={logoPulseTransition}
+      aria-hidden
+    >
+      <Image
+        src="/govmind.png"
+        alt=""
+        width={size}
+        height={size}
+        className="h-full w-full object-cover"
+        priority
+      />
+    </motion.div>
+  )
+}
 
 interface Props {
   language: 'en' | 'si' | 'ta'
@@ -116,12 +154,21 @@ export default function AvatarViewer({
         label={regionLabel}
         className="flex items-center justify-center border-yellow-400/30 bg-gray-800"
       >
-        <div className="px-4 text-center">
-          <div className="mb-4 text-6xl" aria-hidden>
-            👩‍💼
-          </div>
-          <p className="text-sm text-gray-400">GovMind will appear here</p>
-        </div>
+        <motion.div
+          className="px-4 text-center"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+        >
+          <GovMindLogo />
+          <motion.p
+            className="text-sm text-gray-400"
+            animate={{ opacity: [0.55, 1, 0.55] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            GovMind will appear here
+          </motion.p>
+        </motion.div>
       </AvatarFrame>
     )
   }
@@ -132,7 +179,21 @@ export default function AvatarViewer({
         label={regionLabel}
         className="flex items-center justify-center border-yellow-400/30 bg-gray-800"
       >
-        <p className="text-sm text-gray-400">Loading GovMind…</p>
+        <motion.div
+          className="flex flex-col items-center gap-3"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <GovMindLogo size={64} />
+          <motion.p
+            className="text-sm text-gray-400"
+            animate={{ opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            Loading GovMind…
+          </motion.p>
+        </motion.div>
       </AvatarFrame>
     )
   }
