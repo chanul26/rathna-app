@@ -4,6 +4,8 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useEffect, useState, type ReactNode } from 'react'
 
+import govmindLogo from './govmind.png'
+
 const logoPulse = {
   scale: [1, 1.05, 1],
   boxShadow: [
@@ -29,7 +31,7 @@ function GovMindLogo({ size = 80 }: { size?: number }) {
       aria-hidden
     >
       <Image
-        src="/govmind.png"
+        src={govmindLogo}
         alt=""
         width={size}
         height={size}
