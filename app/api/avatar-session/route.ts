@@ -40,7 +40,7 @@ export async function GET(req: Request) {
     return NextResponse.json(
       {
         error:
-          'Could not create a service-specific Rathna agent. Check BEYOND_PRESENCE_API_KEY and base agent settings.',
+          'Could not create a service-specific GovMind agent. Check BEYOND_PRESENCE_API_KEY and base agent settings.',
         agentId: baseAgentId,
         embedUrl: `https://bey.chat/${baseAgentId}`,
         useBaseAgent: true,

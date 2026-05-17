@@ -10,9 +10,9 @@ interface Props {
 }
 
 const languageTitles: Record<Props['language'], string> = {
-  en: 'Talk to Rathna',
-  si: 'රත්න සමඟ කතා කරන්න',
-  ta: 'ரத்னாவுடன் பேசுங்கள்',
+  en: 'Talk to GovMind',
+  si: 'GovMind සමඟ කතා කරන්න',
+  ta: 'GovMind உடன் பேசுங்கள்',
 }
 
 const frameClassName = [
@@ -92,12 +92,12 @@ export default function AvatarViewer({
           return
         }
 
-        setSessionError(data.error ?? 'Could not load Rathna')
+        setSessionError(data.error ?? 'Could not load GovMind')
         onAgentIdChange(null)
       })
       .catch(() => {
         if (!cancelled) {
-          setSessionError('Could not connect to Rathna')
+          setSessionError('Could not connect to GovMind')
           onAgentIdChange(null)
         }
       })
@@ -120,7 +120,7 @@ export default function AvatarViewer({
           <div className="mb-4 text-6xl" aria-hidden>
             👩‍💼
           </div>
-          <p className="text-sm text-gray-400">Rathna will appear here</p>
+          <p className="text-sm text-gray-400">GovMind will appear here</p>
         </div>
       </AvatarFrame>
     )
@@ -132,7 +132,7 @@ export default function AvatarViewer({
         label={regionLabel}
         className="flex items-center justify-center border-yellow-400/30 bg-gray-800"
       >
-        <p className="text-sm text-gray-400">Loading Rathna…</p>
+        <p className="text-sm text-gray-400">Loading GovMind…</p>
       </AvatarFrame>
     )
   }

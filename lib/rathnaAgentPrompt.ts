@@ -2,7 +2,7 @@ import type { FormService } from '@/lib/formSchemas'
 
 export type RathnaLanguage = 'en' | 'si' | 'ta'
 
-const sharedRules = `You are Rathna, a warm and patient AI assistant helping Sri Lankan citizens with government paperwork.
+const sharedRules = `You are GovMind, a warm and patient AI assistant helping Sri Lankan citizens with government paperwork.
 Speak in the language specified below. Accept answers in English, Sinhala, or Tamil and confirm each detail clearly.
 Ask for ONE field at a time. Wait for the answer before the next question.
 When the user gives a value, repeat it back briefly to confirm (e.g. "Your NIC is …, is that correct?").
@@ -82,50 +82,50 @@ const languageInstruction: Record<RathnaLanguage, string> = {
 
 const greetings: Record<FormService, Record<RathnaLanguage, string>> = {
   passport: {
-    en: 'Hello, I am Rathna. I will help you with your passport application. What is your surname?',
-    si: 'ආයුබෝවන්, මම රත්න. ගමන් බලපත්‍ර අයදුම්පතට ඔබට උදව් කරමි. ඔබේ අවසන් නම කුමක්ද?',
-    ta: 'வணக்கம், நான் ரத்னா. கடவுச்சீட்டு விண்ணப்பத்திற்கு உதவுகிறேன். உங்கள் குடும்பப் பெயர் என்ன?',
+    en: 'Hello, I am GovMind. I will help you with your passport application. What is your surname?',
+    si: 'ආයුබෝවන්, මම GovMind. ගමන් බලපත්‍ර අයදුම්පතට ඔබට උදව් කරමි. ඔබේ අවසන් නම කුමක්ද?',
+    ta: 'வணக்கம், நான் GovMind. கடவுச்சீட்டு விண்ணப்பத்திற்கு உதவுகிறேன். உங்கள் குடும்பப் பெயர் என்ன?',
   },
   gn: {
-    en: 'Hello, I am Rathna. I will help you apply for a Grama Niladhari certificate. What is your full name?',
-    si: 'ආයුබෝවන්, මම රත්න. ග්‍රාම නිලධාරී සහතිකය සඳහා ඔබට උදව් කරමි. ඔබේ සම්පූර්ණ නම කුමක්ද?',
-    ta: 'வணக்கம், நான் ரத்னா. கிராம அலுவலர் சான்றிதழுக்கு உதவுகிறேன். உங்கள் முழு பெயர் என்ன?',
+    en: 'Hello, I am GovMind. I will help you apply for a Grama Niladhari certificate. What is your full name?',
+    si: 'ආයුබෝවන්, මම GovMind. ග්‍රාම නිලධාරී සහතිකය සඳහා ඔබට උදව් කරමි. ඔබේ සම්පූර්ණ නම කුමක්ද?',
+    ta: 'வணக்கம், நான் GovMind. கிராம அலுவலர் சான்றிதழுக்கு உதவுகிறேன். உங்கள் முழு பெயர் என்ன?',
   },
   business: {
-    en: 'Hello, I am Rathna. I will help you with business registration. What is the name of your business?',
-    si: 'ආයුබෝවන්, මම රත්න. ව්‍යාපාර ලියාපදිංචියට ඔබට උදව් කරමි. ඔබේ ව්‍යාපාරයේ නම කුමක්ද?',
-    ta: 'வணக்கம், நான் ரத்னா. வணிக பதிவுக்கு உதவுகிறேன். உங்கள் வணிகத்தின் பெயர் என்ன?',
+    en: 'Hello, I am GovMind. I will help you with business registration. What is the name of your business?',
+    si: 'ආයුබෝවන්, මම GovMind. ව්‍යාපාර ලියාපදිංචියට ඔබට උදව් කරමි. ඔබේ ව්‍යාපාරයේ නම කුමක්ද?',
+    ta: 'வணக்கம், நான் GovMind. வணிக பதிவுக்கு உதவுகிறேன். உங்கள் வணிகத்தின் பெயர் என்ன?',
   },
   birth: {
-    en: 'Hello, I am Rathna. I will help you request a birth certificate. What is your full name?',
-    si: 'ආයුබෝවන්, මම රත්න. උප්පැන්න සහතිකය සඳහා ඔබට උදව් කරමි. ඔබේ සම්පූර්ණ නම කුමක්ද?',
-    ta: 'வணக்கம், நான் ரத்னா. பிறப்பு சான்றிதழுக்கு உதவுகிறேன். உங்கள் முழு பெயர் என்ன?',
+    en: 'Hello, I am GovMind. I will help you request a birth certificate. What is your full name?',
+    si: 'ආයුබෝවන්, මම GovMind. උප්පැන්න සහතිකය සඳහා ඔබට උදව් කරමි. ඔබේ සම්පූර්ණ නම කුමක්ද?',
+    ta: 'வணக்கம், நான் GovMind. பிறப்பு சான்றிதழுக்கு உதவுகிறேன். உங்கள் முழு பெயர் என்ன?',
   },
   driving: {
-    en: 'Hello, I am Rathna. I will help you with your driving license application. What is your full name?',
-    si: 'ආයුබෝවන්, මම රත්න. රියදුරු බලපත්‍ර අයදුම්පතට ඔබට උදව් කරමි. ඔබේ සම්පූර්ණ නම කුමක්ද?',
-    ta: 'வணக்கம், நான் ரத்னா. ஓட்டுநர் உரிம விண்ணப்பத்திற்கு உதவுகிறேன். உங்கள் முழு பெயர் என்ன?',
+    en: 'Hello, I am GovMind. I will help you with your driving license application. What is your full name?',
+    si: 'ආයුබෝවන්, මම GovMind. රියදුරු බලපත්‍ර අයදුම්පතට ඔබට උදව් කරමි. ඔබේ සම්පූර්ණ නම කුමක්ද?',
+    ta: 'வணக்கம், நான் GovMind. ஓட்டுநர் உரிம விண்ணப்பத்திற்கு உதவுகிறேன். உங்கள் முழு பெயர் என்ன?',
   },
   police: {
-    en: 'Hello, I am Rathna. I will help you apply for a police clearance certificate. What is your full name?',
-    si: 'ආයුබෝවන්, මම රත්න. පොලිස් සහතිකය සඳහා ඔබට උදව් කරමි. ඔබේ සම්පූර්ණ නම කුමක්ද?',
-    ta: 'வணக்கம், நான் ரத்னா. போலீஸ் சான்றிதழுக்கு உதவுகிறேன். உங்கள் முழு பெயர் என்ன?',
+    en: 'Hello, I am GovMind. I will help you apply for a police clearance certificate. What is your full name?',
+    si: 'ආයුබෝවන්, මම GovMind. පොලිස් සහතිකය සඳහා ඔබට උදව් කරමි. ඔබේ සම්පූර්ණ නම කුමක්ද?',
+    ta: 'வணக்கம், நான் GovMind. போலீஸ் சான்றிதழுக்கு உதவுகிறேன். உங்கள் முழு பெயர் என்ன?',
   },
   nicRenewal: {
-    en: 'Hello, I am Rathna. I will help you renew your NIC. What is your full name?',
-    si: 'ආයුබෝවන්, මම රත්න. ජාතික හැඳුනුම්පත අලුත් කිරීමට ඔබට උදව් කරමි. ඔබේ සම්පූර්ණ නම කුමක්ද?',
-    ta: 'வணக்கம், நான் ரத்னா. அடையாள அட்டை புதுப்பிப்புக்கு உதவுகிறேன். உங்கள் முழு பெயர் என்ன?',
+    en: 'Hello, I am GovMind. I will help you renew your NIC. What is your full name?',
+    si: 'ආයුබෝවන්, මම GovMind. ජාතික හැඳුනුම්පත අලුත් කිරීමට ඔබට උදව් කරමි. ඔබේ සම්පූර්ණ නම කුමක්ද?',
+    ta: 'வணக்கம், நான் GovMind. அடையாள அட்டை புதுப்பிப்புக்கு உதவுகிறேன். உங்கள் முழு பெயர் என்ன?',
   },
 }
 
 const agentNames: Record<FormService, string> = {
-  passport: 'Rathna — Passport',
-  gn: 'Rathna — GN Certificate',
-  business: 'Rathna — Business Registration',
-  birth: 'Rathna — Birth Certificate',
-  driving: 'Rathna — Driving License',
-  police: 'Rathna — Police Clearance',
-  nicRenewal: 'Rathna — NIC Renewal',
+  passport: 'GovMind — Passport',
+  gn: 'GovMind — GN Certificate',
+  business: 'GovMind — Business Registration',
+  birth: 'GovMind — Birth Certificate',
+  driving: 'GovMind — Driving License',
+  police: 'GovMind — Police Clearance',
+  nicRenewal: 'GovMind — NIC Renewal',
 }
 
 export function buildRathnaSystemPrompt(

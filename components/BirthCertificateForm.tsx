@@ -88,7 +88,7 @@ export default function BirthCertificateForm({ formData }: Props) {
         </h3>
 
         <p className="mt-1 text-xs text-gray-400">
-          Speak to Rathna to fill this form automatically
+          Speak to GovMind to fill this form automatically
         </p>
       </motion.div>
 

@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RATHNA — Your AI Government Assistant",
+  title: "GovMind — Your AI Government Assistant",
   description: "AI assistant for Sri Lankan government services",
 };
 

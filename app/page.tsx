@@ -110,7 +110,7 @@ function resetAllFormData() {
 
 const labels = {
   en: {
-    title: 'RATHNA',
+    title: 'GovMind',
     subtitle: 'Your AI Government Assistant',
     selectService: 'What do you need help with today?',
     passport: '🛂 Passport Application',
@@ -122,7 +122,7 @@ const labels = {
     nicRenewal: '🪪 NIC Renewal',
   },
   si: {
-    title: 'රත්න',
+    title: 'GovMind',
     subtitle: 'ඔබේ AI රජයේ සේවාව',
     selectService: 'අද ඔබට කුමක් අවශ්‍යද?',
     passport: '🛂 ගමන් බලපත්‍ර අයදුම්පත',
@@ -134,7 +134,7 @@ const labels = {
     nicRenewal: '🪪 ජාතික හැඳුනුම්පත් අලුත් කිරීම',
   },
   ta: {
-    title: 'ரத்னா',
+    title: 'GovMind',
     subtitle: 'உங்கள் AI அரசாங்க உதவியாளர்',
     selectService: 'இன்று உங்களுக்கு என்ன உதவி வேண்டும்?',
     passport: '🛂 கடவுச்சீட்டு விண்ணப்பம்',
@@ -420,7 +420,7 @@ export default function Home() {
           >
             <p className="text-gray-300 text-sm">
               {selectedService
-                ? 'Speak to Rathna — your data is cleared when you finish or start a new applicant'
+                ? 'Speak to GovMind — your data is cleared when you finish or start a new applicant'
                 : t.selectService}
             </p>
           </div>
