@@ -198,6 +198,7 @@ export default function Home() {
   const [nicRenewalData, setNicRenewalData] =
     useState<NICRenewalFormData>(emptyNicRenewalForm)
   const [conversationEpoch, setConversationEpoch] = useState(0)
+  const [avatarAgentId, setAvatarAgentId] = useState<string | null>(null)
   const conversationEpochRef = useRef(0)
   const activeAgentIdRef = useRef<string | null>(null)
   const activeCallIdRef = useRef<string | null>(null)
@@ -234,6 +235,7 @@ export default function Home() {
   const finishApplication = useCallback(() => {
     retireActiveCall()
     activeAgentIdRef.current = null
+    setAvatarAgentId(null)
     sessionStartedAtRef.current = new Date().toISOString()
     clearForms()
     conversationEpochRef.current += 1
@@ -243,6 +245,7 @@ export default function Home() {
   const beginNewConversation = useCallback(() => {
     retireActiveCall()
     activeAgentIdRef.current = null
+    setAvatarAgentId(null)
     sessionStartedAtRef.current = new Date().toISOString()
     conversationEpochRef.current += 1
     setConversationEpoch(conversationEpochRef.current)
@@ -251,6 +254,7 @@ export default function Home() {
 
   const handleAgentIdChange = useCallback((agentId: string | null) => {
     activeAgentIdRef.current = agentId
+    setAvatarAgentId(agentId)
     activeCallIdRef.current = null
     lastMessageCountRef.current = 0
   }, [])
@@ -281,14 +285,15 @@ export default function Home() {
   )
 
   useEffect(() => {
-    if (!selectedService) return
+    if (!selectedService || !avatarAgentId) return
 
     const epochAtStart = conversationEpochRef.current
 
     const syncFromAvatar = async () => {
       if (
         epochAtStart !== conversationEpochRef.current ||
-        syncInFlightRef.current
+        syncInFlightRef.current ||
+        !activeAgentIdRef.current
       ) {
         return
       }
@@ -343,7 +348,7 @@ export default function Home() {
     syncFromAvatar()
     const interval = setInterval(syncFromAvatar, 2500)
     return () => clearInterval(interval)
-  }, [selectedService, conversationEpoch, applyFormData])
+  }, [selectedService, conversationEpoch, avatarAgentId, applyFormData])
 
   function handleBack() {
     beginNewConversation()

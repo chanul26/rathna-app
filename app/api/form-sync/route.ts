@@ -1,32 +1,13 @@
 import { NextResponse } from 'next/server'
 import { syncFormFromBey } from '@/lib/syncFromBey'
-import type { FormService } from '@/lib/formSchemas'
+import { isFormService } from '@/lib/formSchemas'
 
 export const dynamic = 'force-dynamic'
 
-const validServices = [
-  'passport',
-  'gn',
-  'business',
-  'birth',
-  'driving',
-  'police',
-  'nicRenewal',
-] as const
-
-function parseService(value: string | null): FormService | null {
-  if (
-    validServices.includes(value as (typeof validServices)[number])
-  ) {
-    return value as FormService
-  }
-  return null
-}
-
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
-  const service = parseService(searchParams.get('service'))
-  if (!service) {
+  const serviceParam = searchParams.get('service')
+  if (!isFormService(serviceParam)) {
     return NextResponse.json({ error: 'Invalid service' }, { status: 400 })
   }
 
@@ -47,7 +28,7 @@ export async function GET(req: Request) {
 
   try {
     const result = await syncFormFromBey({
-      service,
+      service: serviceParam,
       agentId,
       activeCallId,
       completedCallIds,

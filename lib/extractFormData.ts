@@ -8,12 +8,12 @@ const systemPrompt = `You are an expert data extraction assistant.
 A user is speaking in English, Sinhala, or Tamil to a government assistant named Rathna.
 You receive ONE applicant's conversation transcript only.
 Extract from "user:" lines first. If the agent (Rathna) repeats or confirms a value and the user agreed, use that confirmed value from "agent:" lines too.
-The Service field tells you which form is active — extract ONLY the fields listed for that service, never passport-only fields for gn or business.
+The Service field tells you which form is active — extract ONLY the fields listed for that service. Ignore fields that belong to other services.
 If a field was not mentioned for this applicant, return an empty string "" for that field.
 You are given the FULL conversation so far — include every detail the user has already stated in this chat, not only their latest line.
 Do not reuse data from other people or prior conversations. Do not guess.
 Translate Sinhala or Tamil into English for form values.
-For names: put family name in surname (passport) or full name in fullName (GN) / ownerName (business) as appropriate.`
+For names: put family name in surname (passport), full name in fullName (GN, birth, driving, police, nicRenewal), or ownerName (business) as appropriate.`
 
 const serviceHints: Record<FormService, string> = {
   passport:

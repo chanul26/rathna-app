@@ -1,29 +1,10 @@
 import { NextResponse } from 'next/server'
 import { getAgentId } from '@/lib/beyApi'
 import { createRathnaSessionAgent } from '@/lib/createRathnaSessionAgent'
-import type { FormService } from '@/lib/formSchemas'
+import { isFormService, type FormService } from '@/lib/formSchemas'
 import type { RathnaLanguage } from '@/lib/rathnaAgentPrompt'
 
 export const dynamic = 'force-dynamic'
-
-const validServices = [
-  'passport',
-  'gn',
-  'business',
-  'birth',
-  'driving',
-  'police',
-  'nicRenewal',
-] as const
-
-function parseService(value: string | null): FormService | null {
-  if (
-    validServices.includes(value as (typeof validServices)[number])
-  ) {
-    return value as FormService
-  }
-  return null
-}
 
 function parseLanguage(value: string | null): RathnaLanguage {
   if (value === 'si' || value === 'ta') return value
@@ -40,7 +21,10 @@ export async function GET(req: Request) {
   }
 
   const { searchParams } = new URL(req.url)
-  const service = parseService(searchParams.get('service'))
+  const serviceParam = searchParams.get('service')
+  const service: FormService | null = isFormService(serviceParam)
+    ? serviceParam
+    : null
   const language = parseLanguage(searchParams.get('language'))
 
   if (!service) {

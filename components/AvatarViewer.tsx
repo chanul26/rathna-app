@@ -86,7 +86,7 @@ export default function AvatarViewer({
             onAgentIdChange(data.agentId)
             if (data.useBaseAgent && selectedService !== 'passport') {
               setSessionError(
-                'Using default agent — GN/Business prompts may not apply. Check API key permissions.',
+                'Using default agent — this form may not fill correctly. Check Bey API key can create agents.',
               )
             }
           return

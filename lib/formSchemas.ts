@@ -1,13 +1,20 @@
 // lib/formSchemas.ts
 
-export type FormService =
-  | 'passport'
-  | 'gn'
-  | 'business'
-  | 'birth'
-  | 'driving'
-  | 'police'
-  | 'nicRenewal'
+export const FORM_SERVICES = [
+  'passport',
+  'gn',
+  'business',
+  'birth',
+  'driving',
+  'police',
+  'nicRenewal',
+] as const
+
+export type FormService = (typeof FORM_SERVICES)[number]
+
+export function isFormService(value: string | null): value is FormService {
+  return FORM_SERVICES.includes(value as FormService)
+}
 
 export const passportSchema = {
     name: "passport_extraction",
@@ -129,31 +136,38 @@ export const birthSchema = {
     properties: {
       fullName: {
         type: 'string',
-        description: 'Full legal name. Leave empty string if not mentioned.',
+        description:
+          'Full legal name on the birth certificate. Leave empty string if not mentioned.',
       },
       dateOfBirth: {
         type: 'string',
-        description: 'Date of birth (YYYY-MM-DD if possible).',
+        description:
+          'Date of birth (YYYY-MM-DD if possible). Leave empty string if not mentioned.',
       },
       placeOfBirth: {
         type: 'string',
-        description: 'Place of birth.',
+        description:
+          'Place of birth (city/town). Leave empty string if not mentioned.',
       },
       motherName: {
         type: 'string',
-        description: "Mother's full name.",
+        description:
+          "Mother's full legal name. Leave empty string if not mentioned.",
       },
       fatherName: {
         type: 'string',
-        description: "Father's full name.",
+        description:
+          "Father's full legal name. Leave empty string if not mentioned.",
       },
       nationalId: {
         type: 'string',
-        description: 'NIC number.',
+        description:
+          'NIC number if mentioned. Leave empty string if not mentioned.',
       },
       district: {
         type: 'string',
-        description: 'District.',
+        description:
+          'District in Sri Lanka. Leave empty string if not mentioned.',
       },
     },
     required: [
@@ -176,18 +190,35 @@ export const drivingSchema = {
   schema: {
     type: 'object',
     properties: {
-      fullName: { type: 'string', description: 'Full legal name.' },
-      nationalId: { type: 'string', description: 'NIC number.' },
-      address: { type: 'string', description: 'Residential address.' },
-      bloodGroup: { type: 'string', description: 'Blood group (e.g. A+).' },
+      fullName: {
+        type: 'string',
+        description: 'Full legal name. Leave empty string if not mentioned.',
+      },
+      nationalId: {
+        type: 'string',
+        description: 'NIC number. Leave empty string if not mentioned.',
+      },
+      address: {
+        type: 'string',
+        description: 'Residential address. Leave empty string if not mentioned.',
+      },
+      bloodGroup: {
+        type: 'string',
+        description: 'Blood group (e.g. A+). Leave empty string if not mentioned.',
+      },
       vehicleCategory: {
         type: 'string',
-        description: 'Vehicle category (e.g. Light Vehicle).',
+        description:
+          'Vehicle category (e.g. Light Vehicle). Leave empty string if not mentioned.',
       },
-      phone: { type: 'string', description: 'Phone number.' },
+      phone: {
+        type: 'string',
+        description: 'Phone number. Leave empty string if not mentioned.',
+      },
       licenseType: {
         type: 'string',
-        description: 'License type (e.g. New License, Renewal).',
+        description:
+          'License type (New License or Renewal). Leave empty string if not mentioned.',
       },
     },
     required: [
@@ -210,16 +241,37 @@ export const policeSchema = {
   schema: {
     type: 'object',
     properties: {
-      fullName: { type: 'string', description: 'Full legal name.' },
-      nationalId: { type: 'string', description: 'NIC number.' },
-      passportNumber: { type: 'string', description: 'Passport number.' },
-      address: { type: 'string', description: 'Residential address.' },
+      fullName: {
+        type: 'string',
+        description: 'Full legal name. Leave empty string if not mentioned.',
+      },
+      nationalId: {
+        type: 'string',
+        description: 'NIC number. Leave empty string if not mentioned.',
+      },
+      passportNumber: {
+        type: 'string',
+        description:
+          'Passport number if they have one. Leave empty string if not mentioned.',
+      },
+      address: {
+        type: 'string',
+        description: 'Residential address. Leave empty string if not mentioned.',
+      },
       countryApplyingFor: {
         type: 'string',
-        description: 'Country applying for clearance.',
+        description:
+          'Country they need clearance for (e.g. Canada, UAE). Leave empty string if not mentioned.',
       },
-      reason: { type: 'string', description: 'Reason for clearance.' },
-      phone: { type: 'string', description: 'Phone number.' },
+      reason: {
+        type: 'string',
+        description:
+          'Reason for clearance (e.g. employment abroad). Leave empty string if not mentioned.',
+      },
+      phone: {
+        type: 'string',
+        description: 'Phone number. Leave empty string if not mentioned.',
+      },
     },
     required: [
       'fullName',
@@ -241,16 +293,36 @@ export const nicRenewalSchema = {
   schema: {
     type: 'object',
     properties: {
-      fullName: { type: 'string', description: 'Full legal name.' },
-      nationalId: { type: 'string', description: 'NIC number.' },
-      dateOfBirth: { type: 'string', description: 'Date of birth.' },
-      address: { type: 'string', description: 'Residential address.' },
-      phone: { type: 'string', description: 'Phone number.' },
+      fullName: {
+        type: 'string',
+        description: 'Full legal name. Leave empty string if not mentioned.',
+      },
+      nationalId: {
+        type: 'string',
+        description: 'Current or previous NIC number. Leave empty string if not mentioned.',
+      },
+      dateOfBirth: {
+        type: 'string',
+        description:
+          'Date of birth (YYYY-MM-DD if possible). Leave empty string if not mentioned.',
+      },
+      address: {
+        type: 'string',
+        description: 'Residential address. Leave empty string if not mentioned.',
+      },
+      phone: {
+        type: 'string',
+        description: 'Phone number. Leave empty string if not mentioned.',
+      },
       reasonForRenewal: {
         type: 'string',
-        description: 'Reason for renewal (e.g. Lost NIC).',
+        description:
+          'Reason for renewal (lost, damaged, expired). Leave empty string if not mentioned.',
       },
-      district: { type: 'string', description: 'District.' },
+      district: {
+        type: 'string',
+        description: 'District in Sri Lanka. Leave empty string if not mentioned.',
+      },
     },
     required: [
       'fullName',
