@@ -1,6 +1,13 @@
 // lib/formSchemas.ts
 
-export type FormService = 'passport' | 'gn' | 'business'
+export type FormService =
+  | 'passport'
+  | 'gn'
+  | 'business'
+  | 'birth'
+  | 'driving'
+  | 'police'
+  | 'nicRenewal'
 
 export const passportSchema = {
     name: "passport_extraction",
@@ -113,10 +120,159 @@ export const businessSchema = {
   },
 }
 
+export const birthSchema = {
+  name: 'birth_extraction',
+  description: 'Extracts information for a birth certificate request',
+  strict: true,
+  schema: {
+    type: 'object',
+    properties: {
+      fullName: {
+        type: 'string',
+        description: 'Full legal name. Leave empty string if not mentioned.',
+      },
+      dateOfBirth: {
+        type: 'string',
+        description: 'Date of birth (YYYY-MM-DD if possible).',
+      },
+      placeOfBirth: {
+        type: 'string',
+        description: 'Place of birth.',
+      },
+      motherName: {
+        type: 'string',
+        description: "Mother's full name.",
+      },
+      fatherName: {
+        type: 'string',
+        description: "Father's full name.",
+      },
+      nationalId: {
+        type: 'string',
+        description: 'NIC number.',
+      },
+      district: {
+        type: 'string',
+        description: 'District.',
+      },
+    },
+    required: [
+      'fullName',
+      'dateOfBirth',
+      'placeOfBirth',
+      'motherName',
+      'fatherName',
+      'nationalId',
+      'district',
+    ],
+    additionalProperties: false,
+  },
+}
+
+export const drivingSchema = {
+  name: 'driving_extraction',
+  description: 'Extracts information for a driving license application',
+  strict: true,
+  schema: {
+    type: 'object',
+    properties: {
+      fullName: { type: 'string', description: 'Full legal name.' },
+      nationalId: { type: 'string', description: 'NIC number.' },
+      address: { type: 'string', description: 'Residential address.' },
+      bloodGroup: { type: 'string', description: 'Blood group (e.g. A+).' },
+      vehicleCategory: {
+        type: 'string',
+        description: 'Vehicle category (e.g. Light Vehicle).',
+      },
+      phone: { type: 'string', description: 'Phone number.' },
+      licenseType: {
+        type: 'string',
+        description: 'License type (e.g. New License, Renewal).',
+      },
+    },
+    required: [
+      'fullName',
+      'nationalId',
+      'address',
+      'bloodGroup',
+      'vehicleCategory',
+      'phone',
+      'licenseType',
+    ],
+    additionalProperties: false,
+  },
+}
+
+export const policeSchema = {
+  name: 'police_extraction',
+  description: 'Extracts information for a police clearance certificate',
+  strict: true,
+  schema: {
+    type: 'object',
+    properties: {
+      fullName: { type: 'string', description: 'Full legal name.' },
+      nationalId: { type: 'string', description: 'NIC number.' },
+      passportNumber: { type: 'string', description: 'Passport number.' },
+      address: { type: 'string', description: 'Residential address.' },
+      countryApplyingFor: {
+        type: 'string',
+        description: 'Country applying for clearance.',
+      },
+      reason: { type: 'string', description: 'Reason for clearance.' },
+      phone: { type: 'string', description: 'Phone number.' },
+    },
+    required: [
+      'fullName',
+      'nationalId',
+      'passportNumber',
+      'address',
+      'countryApplyingFor',
+      'reason',
+      'phone',
+    ],
+    additionalProperties: false,
+  },
+}
+
+export const nicRenewalSchema = {
+  name: 'nic_renewal_extraction',
+  description: 'Extracts information for NIC renewal',
+  strict: true,
+  schema: {
+    type: 'object',
+    properties: {
+      fullName: { type: 'string', description: 'Full legal name.' },
+      nationalId: { type: 'string', description: 'NIC number.' },
+      dateOfBirth: { type: 'string', description: 'Date of birth.' },
+      address: { type: 'string', description: 'Residential address.' },
+      phone: { type: 'string', description: 'Phone number.' },
+      reasonForRenewal: {
+        type: 'string',
+        description: 'Reason for renewal (e.g. Lost NIC).',
+      },
+      district: { type: 'string', description: 'District.' },
+    },
+    required: [
+      'fullName',
+      'nationalId',
+      'dateOfBirth',
+      'address',
+      'phone',
+      'reasonForRenewal',
+      'district',
+    ],
+    additionalProperties: false,
+  },
+}
+
 const schemaByService = {
   passport: passportSchema,
   gn: gnSchema,
   business: businessSchema,
+  birth: birthSchema,
+  driving: drivingSchema,
+  police: policeSchema,
+  nicRenewal: nicRenewalSchema,
 } as const
 
 export function getSchemaForService(service: FormService) {

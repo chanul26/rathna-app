@@ -36,6 +36,42 @@ const serviceFields: Record<FormService, string> = {
 4. Business address
 5. Type of business (e.g. retail shop, restaurant, salon)
 6. District where the business operates`,
+
+  birth: `Collect exactly these fields for a BIRTH CERTIFICATE request:
+1. Full legal name
+2. Date of birth
+3. Place of birth
+4. Mother's full name
+5. Father's full name
+6. NIC number
+7. District`,
+
+  driving: `Collect exactly these fields for a DRIVING LICENSE application:
+1. Full legal name
+2. NIC number
+3. Residential address
+4. Blood group
+5. Vehicle category (e.g. Light Vehicle)
+6. Phone number
+7. License type (e.g. New License, Renewal)`,
+
+  police: `Collect exactly these fields for a POLICE CLEARANCE certificate:
+1. Full legal name
+2. NIC number
+3. Passport number
+4. Residential address
+5. Country applying for
+6. Reason for clearance
+7. Phone number`,
+
+  nicRenewal: `Collect exactly these fields for NIC RENEWAL:
+1. Full legal name
+2. NIC number
+3. Date of birth
+4. Residential address
+5. Phone number
+6. Reason for renewal (e.g. lost NIC, damaged NIC)
+7. District`,
 }
 
 const languageInstruction: Record<RathnaLanguage, string> = {
@@ -60,12 +96,36 @@ const greetings: Record<FormService, Record<RathnaLanguage, string>> = {
     si: 'ආයුබෝවන්, මම රත්න. ව්‍යාපාර ලියාපදිංචියට ඔබට උදව් කරමි. ඔබේ ව්‍යාපාරයේ නම කුමක්ද?',
     ta: 'வணக்கம், நான் ரத்னா. வணிக பதிவுக்கு உதவுகிறேன். உங்கள் வணிகத்தின் பெயர் என்ன?',
   },
+  birth: {
+    en: 'Hello, I am Rathna. I will help you request a birth certificate. What is your full name?',
+    si: 'ආයුබෝවන්, මම රත්න. උප්පැන්න සහතිකය සඳහා ඔබට උදව් කරමි. ඔබේ සම්පූර්ණ නම කුමක්ද?',
+    ta: 'வணக்கம், நான் ரத்னா. பிறப்பு சான்றிதழுக்கு உதவுகிறேன். உங்கள் முழு பெயர் என்ன?',
+  },
+  driving: {
+    en: 'Hello, I am Rathna. I will help you with your driving license application. What is your full name?',
+    si: 'ආයුබෝවන්, මම රත්න. රියදුරු බලපත්‍ර අයදුම්පතට ඔබට උදව් කරමි. ඔබේ සම්පූර්ණ නම කුමක්ද?',
+    ta: 'வணக்கம், நான் ரத்னா. ஓட்டுநர் உரிம விண்ணப்பத்திற்கு உதவுகிறேன். உங்கள் முழு பெயர் என்ன?',
+  },
+  police: {
+    en: 'Hello, I am Rathna. I will help you apply for a police clearance certificate. What is your full name?',
+    si: 'ආයුබෝවන්, මම රත්න. පොලිස් සහතිකය සඳහා ඔබට උදව් කරමි. ඔබේ සම්පූර්ණ නම කුමක්ද?',
+    ta: 'வணக்கம், நான் ரத்னா. போலீஸ் சான்றிதழுக்கு உதவுகிறேன். உங்கள் முழு பெயர் என்ன?',
+  },
+  nicRenewal: {
+    en: 'Hello, I am Rathna. I will help you renew your NIC. What is your full name?',
+    si: 'ආයුබෝවන්, මම රත්න. ජාතික හැඳුනුම්පත අලුත් කිරීමට ඔබට උදව් කරමි. ඔබේ සම්පූර්ණ නම කුමක්ද?',
+    ta: 'வணக்கம், நான் ரத்னா. அடையாள அட்டை புதுப்பிப்புக்கு உதவுகிறேன். உங்கள் முழு பெயர் என்ன?',
+  },
 }
 
 const agentNames: Record<FormService, string> = {
   passport: 'Rathna — Passport',
   gn: 'Rathna — GN Certificate',
   business: 'Rathna — Business Registration',
+  birth: 'Rathna — Birth Certificate',
+  driving: 'Rathna — Driving License',
+  police: 'Rathna — Police Clearance',
+  nicRenewal: 'Rathna — NIC Renewal',
 }
 
 export function buildRathnaSystemPrompt(

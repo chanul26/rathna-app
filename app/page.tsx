@@ -4,6 +4,16 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import PassportForm, { PassportFormData } from '@/components/PassportForm'
 import GNForm, { GNFormData } from '@/components/GNForm'
 import BusinessForm, { BusinessFormData } from '@/components/BusinessForm'
+import BirthCertificateForm, {
+  BirthCertificateFormData,
+} from '@/components/BirthCertificateForm'
+import DrivingLicenseForm, {
+  DrivingLicenseFormData,
+} from '@/components/DrivingLicenseForm'
+import PoliceClearanceForm, {
+  PoliceClearanceFormData,
+} from '@/components/PoliceClearanceForm'
+import NICRenewalForm, { NICRenewalFormData } from '@/components/NICRenewalForm'
 import AvatarViewer from '@/components/AvatarViewer'
 
 const emptyPassportForm: PassportFormData = {
@@ -36,6 +46,46 @@ const emptyBusinessForm: BusinessFormData = {
   district: '',
 }
 
+const emptyBirthForm: BirthCertificateFormData = {
+  fullName: '',
+  dateOfBirth: '',
+  placeOfBirth: '',
+  motherName: '',
+  fatherName: '',
+  nationalId: '',
+  district: '',
+}
+
+const emptyDrivingForm: DrivingLicenseFormData = {
+  fullName: '',
+  nationalId: '',
+  address: '',
+  bloodGroup: '',
+  vehicleCategory: '',
+  phone: '',
+  licenseType: '',
+}
+
+const emptyPoliceForm: PoliceClearanceFormData = {
+  fullName: '',
+  nationalId: '',
+  passportNumber: '',
+  address: '',
+  countryApplyingFor: '',
+  reason: '',
+  phone: '',
+}
+
+const emptyNicRenewalForm: NICRenewalFormData = {
+  fullName: '',
+  nationalId: '',
+  dateOfBirth: '',
+  address: '',
+  phone: '',
+  reasonForRenewal: '',
+  district: '',
+}
+
 function pickNonEmptyFields(
   data: Record<string, string>,
 ): Record<string, string> {
@@ -51,6 +101,83 @@ function resetAllFormData() {
     passport: emptyPassportForm,
     gn: emptyGnForm,
     business: emptyBusinessForm,
+    birth: emptyBirthForm,
+    driving: emptyDrivingForm,
+    police: emptyPoliceForm,
+    nicRenewal: emptyNicRenewalForm,
+  }
+}
+
+const labels = {
+  en: {
+    title: 'RATHNA',
+    subtitle: 'Your AI Government Assistant',
+    selectService: 'What do you need help with today?',
+    passport: '🛂 Passport Application',
+    gn: '📄 Grama Niladhari Certificate',
+    business: '🏢 Business Registration',
+    birth: '👶 Birth Certificate',
+    driving: '🚗 Driving License',
+    police: '🚓 Police Clearance',
+    nicRenewal: '🪪 NIC Renewal',
+  },
+  si: {
+    title: 'රත්න',
+    subtitle: 'ඔබේ AI රජයේ සේවාව',
+    selectService: 'අද ඔබට කුමක් අවශ්‍යද?',
+    passport: '🛂 ගමන් බලපත්‍ර අයදුම්පත',
+    gn: '📄 ග්‍රාම නිලධාරී සහතිකය',
+    business: '🏢 ව්‍යාපාර ලියාපදිංචිය',
+    birth: '👶 උප්පැන්න සහතිකය',
+    driving: '🚗 රියදුරු බලපත්‍රය',
+    police: '🚓 පොලිස් සහතිකය',
+    nicRenewal: '🪪 ජාතික හැඳුනුම්පත් අලුත් කිරීම',
+  },
+  ta: {
+    title: 'ரத்னா',
+    subtitle: 'உங்கள் AI அரசாங்க உதவியாளர்',
+    selectService: 'இன்று உங்களுக்கு என்ன உதவி வேண்டும்?',
+    passport: '🛂 கடவுச்சீட்டு விண்ணப்பம்',
+    gn: '📄 கிராம அலுவலர் சான்றிதழ்',
+    business: '🏢 வணிக பதிவு',
+    birth: '👶 பிறப்பு சான்றிதழ்',
+    driving: '🚗 ஓட்டுநர் உரிமம்',
+    police: '🚓 போலீஸ் சான்றிதழ்',
+    nicRenewal: '🪪 அடையாள அட்டை புதுப்பித்தல்',
+  },
+}
+
+const serviceOptions = [
+  { id: 'passport', labelKey: 'passport' as const },
+  { id: 'gn', labelKey: 'gn' as const },
+  { id: 'business', labelKey: 'business' as const },
+  { id: 'birth', labelKey: 'birth' as const },
+  { id: 'driving', labelKey: 'driving' as const },
+  { id: 'police', labelKey: 'police' as const },
+  { id: 'nicRenewal', labelKey: 'nicRenewal' as const },
+]
+
+function serviceTitle(
+  serviceId: string,
+  t: (typeof labels)['en'],
+): string {
+  switch (serviceId) {
+    case 'passport':
+      return t.passport
+    case 'gn':
+      return t.gn
+    case 'business':
+      return t.business
+    case 'birth':
+      return t.birth
+    case 'driving':
+      return t.driving
+    case 'police':
+      return t.police
+    case 'nicRenewal':
+      return t.nicRenewal
+    default:
+      return t.selectService
   }
 }
 
@@ -62,6 +189,14 @@ export default function Home() {
   const [gnData, setGnData] = useState<GNFormData>(emptyGnForm)
   const [businessData, setBusinessData] =
     useState<BusinessFormData>(emptyBusinessForm)
+  const [birthData, setBirthData] =
+    useState<BirthCertificateFormData>(emptyBirthForm)
+  const [drivingData, setDrivingData] =
+    useState<DrivingLicenseFormData>(emptyDrivingForm)
+  const [policeData, setPoliceData] =
+    useState<PoliceClearanceFormData>(emptyPoliceForm)
+  const [nicRenewalData, setNicRenewalData] =
+    useState<NICRenewalFormData>(emptyNicRenewalForm)
   const [conversationEpoch, setConversationEpoch] = useState(0)
   const conversationEpochRef = useRef(0)
   const activeAgentIdRef = useRef<string | null>(null)
@@ -72,33 +207,6 @@ export default function Home() {
   const syncInFlightRef = useRef(false)
   const syncRequestIdRef = useRef(0)
 
-  const labels = {
-    en: {
-      title: 'RATHNA',
-      subtitle: 'Your AI Government Assistant',
-      selectService: 'What do you need help with today?',
-      passport: '🛂 Passport Application',
-      gn: '📄 Grama Niladhari Certificate',
-      business: '🏢 Business Registration',
-    },
-    si: {
-      title: 'රත්න',
-      subtitle: 'ඔබේ AI රජයේ සේවාව',
-      selectService: 'අද ඔබට කුමක් අවශ්‍යද?',
-      passport: '🛂 ගමන් බලපත්‍ර අයදුම්පත',
-      gn: '📄 ග්‍රාම නිලධාරී සහතිකය',
-      business: '🏢 ව්‍යාපාර ලියාපදිංචිය',
-    },
-    ta: {
-      title: 'ரத்னா',
-      subtitle: 'உங்கள் AI அரசாங்க உதவியாளர்',
-      selectService: 'இன்று உங்களுக்கு என்ன உதவி வேண்டும்?',
-      passport: '🛂 கடவுச்சீட்டு விண்ணப்பம்',
-      gn: '📄 கிராம அலுவலர் சான்றிதழ்',
-      business: '🏢 வணிக பதிவு',
-    },
-  }
-
   const t = labels[language]
 
   const clearForms = useCallback(() => {
@@ -106,6 +214,10 @@ export default function Home() {
     setPassportData(empty.passport)
     setGnData(empty.gn)
     setBusinessData(empty.business)
+    setBirthData(empty.birth)
+    setDrivingData(empty.driving)
+    setPoliceData(empty.police)
+    setNicRenewalData(empty.nicRenewal)
   }, [])
 
   const retireActiveCall = useCallback(() => {
@@ -155,6 +267,14 @@ export default function Home() {
         setGnData((prev) => ({ ...prev, ...patch }))
       } else if (selectedService === 'business') {
         setBusinessData((prev) => ({ ...prev, ...patch }))
+      } else if (selectedService === 'birth') {
+        setBirthData((prev) => ({ ...prev, ...patch }))
+      } else if (selectedService === 'driving') {
+        setDrivingData((prev) => ({ ...prev, ...patch }))
+      } else if (selectedService === 'police') {
+        setPoliceData((prev) => ({ ...prev, ...patch }))
+      } else if (selectedService === 'nicRenewal') {
+        setNicRenewalData((prev) => ({ ...prev, ...patch }))
       }
     },
     [selectedService],
@@ -245,7 +365,6 @@ export default function Home() {
 
   return (
     <div className="flex min-h-dvh w-full flex-col overflow-x-hidden bg-gray-950 text-white">
-
       <header className="safe-padding-x flex w-full shrink-0 flex-col items-center gap-3 border-b border-gray-800 px-4 py-4 sm:flex-row sm:justify-between sm:px-6 md:px-8">
         <div className="flex items-center gap-3">
           <span className="text-2xl">🇱🇰</span>
@@ -309,11 +428,7 @@ export default function Home() {
                 <h2 className="text-xl font-semibold text-center mb-8 text-gray-200">
                   {t.selectService}
                 </h2>
-                {[
-                  { id: 'passport', label: t.passport },
-                  { id: 'gn', label: t.gn },
-                  { id: 'business', label: t.business },
-                ].map((service) => (
+                {serviceOptions.map((service) => (
                   <button
                     key={service.id}
                     type="button"
@@ -321,7 +436,7 @@ export default function Home() {
                     className="group w-full rounded-xl border border-gray-700 bg-gray-800 p-5 text-left transition-all hover:border-yellow-400 hover:bg-gray-700"
                   >
                     <span className="text-base leading-snug break-words transition-colors group-hover:text-yellow-400 sm:text-lg">
-                      {service.label}
+                      {t[service.labelKey]}
                     </span>
                   </button>
                 ))}
@@ -352,11 +467,7 @@ export default function Home() {
                   New applicant
                 </button>
                 <h2 className="min-w-0 flex-1 text-base font-semibold leading-snug text-yellow-400 sm:text-lg">
-                  {selectedService === 'passport'
-                    ? t.passport
-                    : selectedService === 'gn'
-                      ? t.gn
-                      : t.business}
+                  {serviceTitle(selectedService, t)}
                 </h2>
               </div>
 
@@ -367,6 +478,18 @@ export default function Home() {
               {selectedService === 'business' && (
                 <BusinessForm formData={businessData} />
               )}
+              {selectedService === 'birth' && (
+                <BirthCertificateForm formData={birthData} />
+              )}
+              {selectedService === 'driving' && (
+                <DrivingLicenseForm formData={drivingData} />
+              )}
+              {selectedService === 'police' && (
+                <PoliceClearanceForm formData={policeData} />
+              )}
+              {selectedService === 'nicRenewal' && (
+                <NICRenewalForm formData={nicRenewalData} />
+              )}
             </div>
           )}
         </div>
@@ -374,3 +497,4 @@ export default function Home() {
     </div>
   )
 }
+

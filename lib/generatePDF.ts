@@ -2,6 +2,10 @@ import jsPDF from 'jspdf'
 import type { PassportFormData } from '@/components/PassportForm'
 import type { GNFormData } from '@/components/GNForm'
 import type { BusinessFormData } from '@/components/BusinessForm'
+import type { BirthCertificateFormData } from '@/components/BirthCertificateForm'
+import type { DrivingLicenseFormData } from '@/components/DrivingLicenseForm'
+import type { PoliceClearanceFormData } from '@/components/PoliceClearanceForm'
+import type { NICRenewalFormData } from '@/components/NICRenewalForm'
 
 const PLACEHOLDER = '________________________'
 
@@ -213,4 +217,188 @@ export function generateBusinessPDF(data: BusinessFormData) {
 
 export function printBusinessPDF(data: BusinessFormData) {
   printPdfDoc(buildBusinessPDFDoc(data))
+}
+
+function buildBirthCertificatePDFDoc(data: BirthCertificateFormData) {
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  })
+
+  doc.setTextColor(0, 0, 0)
+  doc.setFontSize(14)
+  doc.setFont('helvetica', 'bold')
+  doc.text('SRI LANKA BIRTH CERTIFICATE DIVISION', 105, 20, {
+    align: 'center',
+  })
+
+  doc.setFontSize(16)
+  doc.text('BIRTH CERTIFICATE REQUEST FORM', 105, 30, { align: 'center' })
+  doc.setLineWidth(0.5)
+  doc.line(20, 35, 190, 35)
+
+  doc.setFontSize(11)
+  let yPos = 50
+
+  yPos = drawField(doc, 'Full Name', data.fullName, yPos)
+  yPos = drawField(doc, 'Date of Birth', data.dateOfBirth, yPos)
+  yPos = drawField(doc, 'Place of Birth', data.placeOfBirth, yPos)
+  yPos = drawField(doc, "Mother's Name", data.motherName, yPos)
+  yPos = drawField(doc, "Father's Name", data.fatherName, yPos)
+  yPos = drawField(doc, 'NIC Number', data.nationalId, yPos)
+  yPos = drawField(doc, 'District', data.district, yPos)
+
+  drawSignatureFooter(doc, yPos + 30)
+  return doc
+}
+
+function buildDrivingLicensePDFDoc(data: DrivingLicenseFormData) {
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  })
+
+  doc.setTextColor(0, 0, 0)
+  doc.setFontSize(14)
+  doc.setFont('helvetica', 'bold')
+  doc.text('SRI LANKA DEPARTMENT OF MOTOR TRAFFIC', 105, 20, {
+    align: 'center',
+  })
+
+  doc.setFontSize(16)
+  doc.text('DRIVING LICENSE APPLICATION', 105, 30, { align: 'center' })
+  doc.setLineWidth(0.5)
+  doc.line(20, 35, 190, 35)
+
+  doc.setFontSize(11)
+  let yPos = 50
+
+  yPos = drawField(doc, 'Full Name', data.fullName, yPos)
+  yPos = drawField(doc, 'NIC Number', data.nationalId, yPos)
+  yPos = drawField(doc, 'Address', data.address, yPos)
+  yPos = drawField(doc, 'Blood Group', data.bloodGroup, yPos)
+  yPos = drawField(doc, 'Vehicle Category', data.vehicleCategory, yPos)
+  yPos = drawField(doc, 'License Type', data.licenseType, yPos)
+  yPos = drawField(doc, 'Phone Number', data.phone, yPos)
+
+  drawSignatureFooter(doc, yPos + 30)
+  return doc
+}
+
+function buildPoliceClearancePDFDoc(data: PoliceClearanceFormData) {
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  })
+
+  doc.setTextColor(0, 0, 0)
+  doc.setFontSize(14)
+  doc.setFont('helvetica', 'bold')
+  doc.text('SRI LANKA POLICE DEPARTMENT', 105, 20, { align: 'center' })
+
+  doc.setFontSize(16)
+  doc.text('POLICE CLEARANCE CERTIFICATE APPLICATION', 105, 30, {
+    align: 'center',
+  })
+  doc.setLineWidth(0.5)
+  doc.line(20, 35, 190, 35)
+
+  doc.setFontSize(11)
+  let yPos = 50
+
+  yPos = drawField(doc, 'Full Name', data.fullName, yPos)
+  yPos = drawField(doc, 'NIC Number', data.nationalId, yPos)
+  yPos = drawField(doc, 'Passport Number', data.passportNumber, yPos)
+  yPos = drawField(doc, 'Address', data.address, yPos)
+  yPos = drawField(doc, 'Country Applying For', data.countryApplyingFor, yPos)
+  yPos = drawField(doc, 'Reason', data.reason, yPos)
+  yPos = drawField(doc, 'Phone Number', data.phone, yPos)
+
+  drawSignatureFooter(doc, yPos + 30)
+  return doc
+}
+
+function buildNICRenewalPDFDoc(data: NICRenewalFormData) {
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  })
+
+  doc.setTextColor(0, 0, 0)
+  doc.setFontSize(14)
+  doc.setFont('helvetica', 'bold')
+  doc.text('SRI LANKA REGISTRATION OF PERSONS DEPARTMENT', 105, 20, {
+    align: 'center',
+  })
+
+  doc.setFontSize(16)
+  doc.text('NATIONAL IDENTITY CARD RENEWAL APPLICATION', 105, 30, {
+    align: 'center',
+  })
+  doc.setLineWidth(0.5)
+  doc.line(20, 35, 190, 35)
+
+  doc.setFontSize(11)
+  let yPos = 50
+
+  yPos = drawField(doc, 'Full Name', data.fullName, yPos)
+  yPos = drawField(doc, 'NIC Number', data.nationalId, yPos)
+  yPos = drawField(doc, 'Date of Birth', data.dateOfBirth, yPos)
+  yPos = drawField(doc, 'Address', data.address, yPos)
+  yPos = drawField(doc, 'Phone Number', data.phone, yPos)
+  yPos = drawField(doc, 'Reason for Renewal', data.reasonForRenewal, yPos)
+  yPos = drawField(doc, 'District', data.district, yPos)
+
+  drawSignatureFooter(doc, yPos + 30)
+  return doc
+}
+
+function nicFileId(data: { nationalId?: string; fullName?: string }) {
+  return (
+    data.nationalId?.replace(/[^\w]/g, '') ||
+    data.fullName?.replace(/\s+/g, '_') ||
+    'Draft'
+  )
+}
+
+export function generateBirthCertificatePDF(data: BirthCertificateFormData) {
+  buildBirthCertificatePDFDoc(data).save(
+    `Birth_Certificate_${nicFileId(data)}.pdf`,
+  )
+}
+
+export function printBirthCertificatePDF(data: BirthCertificateFormData) {
+  printPdfDoc(buildBirthCertificatePDFDoc(data))
+}
+
+export function generateDrivingLicensePDF(data: DrivingLicenseFormData) {
+  buildDrivingLicensePDFDoc(data).save(
+    `Driving_License_${nicFileId(data)}.pdf`,
+  )
+}
+
+export function printDrivingLicensePDF(data: DrivingLicenseFormData) {
+  printPdfDoc(buildDrivingLicensePDFDoc(data))
+}
+
+export function generatePoliceClearancePDF(data: PoliceClearanceFormData) {
+  buildPoliceClearancePDFDoc(data).save(
+    `Police_Clearance_${nicFileId(data)}.pdf`,
+  )
+}
+
+export function printPoliceClearancePDF(data: PoliceClearanceFormData) {
+  printPdfDoc(buildPoliceClearancePDFDoc(data))
+}
+
+export function generateNICRenewalPDF(data: NICRenewalFormData) {
+  buildNICRenewalPDFDoc(data).save(`NIC_Renewal_${nicFileId(data)}.pdf`)
+}
+
+export function printNICRenewalPDF(data: NICRenewalFormData) {
+  printPdfDoc(buildNICRenewalPDFDoc(data))
 }

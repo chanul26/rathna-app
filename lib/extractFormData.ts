@@ -21,6 +21,14 @@ const serviceHints: Record<FormService, string> = {
   gn: 'Fields: fullName, nationalId, address, reason (why they need the GN certificate), district.',
   business:
     'Fields: businessName, ownerName, nationalId (owner), businessAddress, businessType, district.',
+  birth:
+    'Fields: fullName, dateOfBirth, placeOfBirth, motherName, fatherName, nationalId, district.',
+  driving:
+    'Fields: fullName, nationalId, address, bloodGroup, vehicleCategory, phone, licenseType.',
+  police:
+    'Fields: fullName, nationalId, passportNumber, address, countryApplyingFor, reason, phone.',
+  nicRenewal:
+    'Fields: fullName, nationalId, dateOfBirth, address, phone, reasonForRenewal, district.',
 }
 
 export async function extractFormData(

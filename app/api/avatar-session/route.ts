@@ -6,9 +6,21 @@ import type { RathnaLanguage } from '@/lib/rathnaAgentPrompt'
 
 export const dynamic = 'force-dynamic'
 
+const validServices = [
+  'passport',
+  'gn',
+  'business',
+  'birth',
+  'driving',
+  'police',
+  'nicRenewal',
+] as const
+
 function parseService(value: string | null): FormService | null {
-  if (value === 'passport' || value === 'gn' || value === 'business') {
-    return value
+  if (
+    validServices.includes(value as (typeof validServices)[number])
+  ) {
+    return value as FormService
   }
   return null
 }
