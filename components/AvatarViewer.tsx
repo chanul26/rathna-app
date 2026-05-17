@@ -72,17 +72,16 @@ export default function AvatarViewer({
     })
 
     fetch(`/api/avatar-session?${params}`, { cache: 'no-store' })
-      .then((res) => res.json())
-      .then(
-        (data: {
+      .then(async (res) => {
+        const data = (await res.json()) as {
           embedUrl?: string
           agentId?: string
           error?: string
           useBaseAgent?: boolean
-        }) => {
-          if (cancelled) return
+        }
+        if (cancelled) return
 
-          if (data.embedUrl && data.agentId) {
+        if (res.ok && data.embedUrl && data.agentId) {
             setEmbedUrl(data.embedUrl)
             onAgentIdChange(data.agentId)
             if (data.useBaseAgent && selectedService !== 'passport') {
@@ -90,12 +89,12 @@ export default function AvatarViewer({
                 'Using default agent — GN/Business prompts may not apply. Check API key permissions.',
               )
             }
-          } else {
-            setSessionError(data.error ?? 'Could not load Rathna')
-            onAgentIdChange(null)
-          }
-        },
-      )
+          return
+        }
+
+        setSessionError(data.error ?? 'Could not load Rathna')
+        onAgentIdChange(null)
+      })
       .catch(() => {
         if (!cancelled) {
           setSessionError('Could not connect to Rathna')

@@ -64,7 +64,6 @@ export default function Home() {
     useState<BusinessFormData>(emptyBusinessForm)
   const [conversationEpoch, setConversationEpoch] = useState(0)
   const conversationEpochRef = useRef(0)
-  const analyzeAbortRef = useRef<AbortController | null>(null)
   const activeAgentIdRef = useRef<string | null>(null)
   const activeCallIdRef = useRef<string | null>(null)
   const completedCallIdsRef = useRef<string[]>([])
@@ -109,36 +108,34 @@ export default function Home() {
     setBusinessData(empty.business)
   }, [])
 
-  const finishApplication = useCallback(() => {
-    analyzeAbortRef.current?.abort()
-    analyzeAbortRef.current = null
+  const retireActiveCall = useCallback(() => {
     if (activeCallIdRef.current) {
       completedCallIdsRef.current = [
         ...completedCallIdsRef.current,
         activeCallIdRef.current,
       ]
     }
-    activeAgentIdRef.current = null
     activeCallIdRef.current = null
     lastMessageCountRef.current = 0
+  }, [])
+
+  const finishApplication = useCallback(() => {
+    retireActiveCall()
+    activeAgentIdRef.current = null
     sessionStartedAtRef.current = new Date().toISOString()
     clearForms()
     conversationEpochRef.current += 1
     setConversationEpoch(conversationEpochRef.current)
-  }, [clearForms])
+  }, [clearForms, retireActiveCall])
 
   const beginNewConversation = useCallback(() => {
-    analyzeAbortRef.current?.abort()
-    analyzeAbortRef.current = null
-    completedCallIdsRef.current = []
+    retireActiveCall()
     activeAgentIdRef.current = null
-    activeCallIdRef.current = null
-    lastMessageCountRef.current = 0
     sessionStartedAtRef.current = new Date().toISOString()
     conversationEpochRef.current += 1
     setConversationEpoch(conversationEpochRef.current)
     clearForms()
-  }, [clearForms])
+  }, [clearForms, retireActiveCall])
 
   const handleAgentIdChange = useCallback((agentId: string | null) => {
     activeAgentIdRef.current = agentId
